@@ -24,12 +24,13 @@ public class Bullet extends JLabel {
     }
 
     //Methods
-    public void moveUp() {
+    public void movement() {
         y -= speed;
         setBounds(x, y, 20, 50);
     }
+    
 
-    public int getYPosition() {
+    public int getY() {
         return y;
     }
 }

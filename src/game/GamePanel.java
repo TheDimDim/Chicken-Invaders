@@ -2,6 +2,7 @@ package game;
 
 import model.Bullet;
 import model.Plane;
+import model.enemy.NormalEnemy;
 
 import javax.swing.*;
 import java.awt.*;
@@ -12,6 +13,8 @@ import java.awt.event.KeyListener;
 
 public class GamePanel extends JPanel implements KeyListener {
 
+    //Fields
+    private NormalEnemy enemy;
     private GameMain gameMain;
     private Plane plane;
     private JLabel backgroundLabel;
@@ -19,6 +22,8 @@ public class GamePanel extends JPanel implements KeyListener {
     private Timer timer;
     private long lastBulletShotTime;
 
+
+    //Constructor
     public GamePanel(GameMain gameMain) {
 
         this.gameMain = gameMain;
@@ -41,6 +46,10 @@ public class GamePanel extends JPanel implements KeyListener {
         plane = new Plane();
         backgroundLabel.add(plane);
 
+        enemy = new NormalEnemy(370, 80);
+        backgroundLabel.add(enemy);
+
+
         //Back to menu button
         JButton backButton = new JButton("Back to Menu");
         backButton.setBounds(200, 0, 200, 40);
@@ -52,6 +61,9 @@ public class GamePanel extends JPanel implements KeyListener {
                 gameMain.showMainMenu();
             }
         });
+
+
+
 
         setFocusable(true);
         addKeyListener(this);
@@ -70,9 +82,22 @@ public class GamePanel extends JPanel implements KeyListener {
     public void moveBullets() {
         for (int i = 0; i < bullets.size(); i++) {
             Bullet bullet = bullets.get(i);
-            bullet.moveUp();
+            bullet.movement();
+            if (enemy != null && bullet.getBounds().intersects(enemy.getBounds())) {
+                backgroundLabel.remove(bullet);
+                bullets.remove(i);
+                i--;
 
-            if (bullet.getYPosition() < 0) {
+                enemy.damage();
+
+                if (enemy.isDead()) {
+                    backgroundLabel.remove(enemy);
+                    enemy = null;
+                }
+
+                continue;
+            }
+            if (bullet.getY() < 0) {
                 backgroundLabel.remove(bullet);
                 bullets.remove(i);
                 i--;
@@ -82,6 +107,7 @@ public class GamePanel extends JPanel implements KeyListener {
         backgroundLabel.repaint();
     }
 
+    //Keyboard
     @Override
     public void keyPressed(KeyEvent e) {
         if (e.getKeyCode() == KeyEvent.VK_RIGHT || e.getKeyCode() == KeyEvent.VK_D) {
