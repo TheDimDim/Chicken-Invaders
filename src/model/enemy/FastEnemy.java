@@ -9,9 +9,9 @@ public class FastEnemy extends Enemy {
         super(x, y, 1);
 
         ImageIcon enemyIcon = new ImageIcon("C:/Users/Asus/Downloads/chicken-20260613T110124Z-3-001/chicken/fast_chicken.png");
-        Image enemyImage = enemyIcon.getImage().getScaledInstance(60, 60, Image.SCALE_SMOOTH);
+        Image enemyImage = enemyIcon.getImage().getScaledInstance(70, 70, Image.SCALE_SMOOTH);
 
         setIcon(new ImageIcon(enemyImage));
-        setBounds(x, y, 60, 60);
+        setBounds(x, y, 70, 70);
     }
 }
