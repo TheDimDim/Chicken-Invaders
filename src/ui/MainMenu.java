@@ -69,7 +69,6 @@ public class MainMenu extends JPanel {
             }
         });
 
-
         //Exit button
         JButton exitButton = new JButton("Exit");
         exitButton.setBounds(300, 400, 200, 40);
@@ -82,4 +81,5 @@ public class MainMenu extends JPanel {
             }
         });
     }
+
 }

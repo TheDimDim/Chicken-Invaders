@@ -89,12 +89,10 @@ public class GamePanel extends JPanel implements KeyListener {
                 i--;
 
                 enemy.damage();
-
                 if (enemy.isDead()) {
                     backgroundLabel.remove(enemy);
                     enemy = null;
                 }
-
                 continue;
             }
             if (bullet.getY() < 0) {
@@ -103,7 +101,6 @@ public class GamePanel extends JPanel implements KeyListener {
                 i--;
             }
         }
-
         backgroundLabel.repaint();
     }
 

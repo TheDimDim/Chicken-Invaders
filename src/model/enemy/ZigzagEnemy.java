@@ -1,4 +1,17 @@
 package model.enemy;
 
-public class ZigzagEnemy {
+import javax.swing.*;
+import java.awt.*;
+
+public class ZigzagEnemy extends Enemy {
+
+    public ZigzagEnemy(int x, int y) {
+        super(x, y, 2);
+
+        ImageIcon enemyIcon = new ImageIcon("C:/Users/Asus/Downloads/chicken-20260613T110124Z-3-001/chicken/zigzag_chicken.png");
+        Image enemyImage = enemyIcon.getImage().getScaledInstance(60, 60, Image.SCALE_SMOOTH);
+
+        setIcon(new ImageIcon(enemyImage));
+        setBounds(x, y, 60, 60);
+    }
 }
