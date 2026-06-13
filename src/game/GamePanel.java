@@ -1,5 +1,6 @@
 package game;
 
+import model.Bullet;
 import model.Plane;
 
 import javax.swing.*;
@@ -13,16 +14,21 @@ public class GamePanel extends JPanel implements KeyListener {
 
     private GameMain gameMain;
     private Plane plane;
+    private JLabel backgroundLabel;
+    private java.util.ArrayList<Bullet> bullets;
+    private Timer timer;
+    private long lastBulletShotTime;
 
     public GamePanel(GameMain gameMain) {
-        this.gameMain = gameMain;
 
+        this.gameMain = gameMain;
         setLayout(null);
+        lastBulletShotTime = 0;
 
         ImageIcon background = new ImageIcon("C:\\Users\\Asus\\Downloads\\background.jpg");
         Image backgroundImage = background.getImage().getScaledInstance(800, 600, Image.SCALE_SMOOTH);
 
-        JLabel backgroundLabel = new JLabel(new ImageIcon(backgroundImage));
+        backgroundLabel = new JLabel(new ImageIcon(backgroundImage));
         backgroundLabel.setBounds(0, 0, 800, 600);
         backgroundLabel.setLayout(null);
         add(backgroundLabel);
@@ -49,6 +55,31 @@ public class GamePanel extends JPanel implements KeyListener {
 
         setFocusable(true);
         addKeyListener(this);
+
+        bullets = new java.util.ArrayList<Bullet>();
+
+        timer = new Timer(16, new ActionListener() {
+            @Override
+            public void actionPerformed(ActionEvent e) {
+                moveBullets();
+            }
+        });
+        timer.start();
+    }
+
+    public void moveBullets() {
+        for (int i = 0; i < bullets.size(); i++) {
+            Bullet bullet = bullets.get(i);
+            bullet.moveUp();
+
+            if (bullet.getYPosition() < 0) {
+                backgroundLabel.remove(bullet);
+                bullets.remove(i);
+                i--;
+            }
+        }
+
+        backgroundLabel.repaint();
     }
 
     @Override
@@ -71,6 +102,19 @@ public class GamePanel extends JPanel implements KeyListener {
 
         if (e.getKeyCode() == KeyEvent.VK_ESCAPE) {
             gameMain.showMainMenu();
+        }
+
+        if (e.getKeyCode() == KeyEvent.VK_SPACE) {
+            long currentTime = System.currentTimeMillis();
+
+            if (currentTime - lastBulletShotTime >= 300) {
+                Bullet bullet = new Bullet(plane.getXPosition() + 35, plane.getYPosition());
+                bullets.add(bullet);
+                backgroundLabel.add(bullet);
+                backgroundLabel.repaint();
+
+                lastBulletShotTime = currentTime;
+            }
         }
     }
 

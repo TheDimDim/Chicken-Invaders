@@ -6,6 +6,7 @@ import javax.swing.*;
 import java.awt.*;
 
 public class GameMain extends JFrame {
+
     public GameMain() {
         setTitle("Chicken Invaders");
         setSize(800, 600);
@@ -17,6 +18,7 @@ public class GameMain extends JFrame {
         add(mainMenu);
     }
 
+    //----------------------------------------------------------------
     public void startNewGame() {
         getContentPane().removeAll();
 
@@ -28,6 +30,7 @@ public class GameMain extends JFrame {
         gamePanel.requestFocusInWindow();
     }
 
+    //----------------------------------------------------------------
     public void showMainMenu() {
         getContentPane().removeAll();
 
@@ -38,6 +41,7 @@ public class GameMain extends JFrame {
         repaint();
     }
 
+    //----------------------------------------------------------------
     public static void main(String[] args) {
         GameMain window = new GameMain();
         window.setVisible(true);

@@ -5,10 +5,12 @@ import java.awt.*;
 
 public class Plane extends JLabel {
 
+    //Fields
     private int x;
     private int y;
     private int speed;
 
+    //Constructor
     public Plane() {
         x = 355;
         y = 460;
@@ -20,8 +22,9 @@ public class Plane extends JLabel {
         setIcon(new ImageIcon(planeImage));
         setBounds(x, y, 90, 90);
     }
-    //Movements
 
+
+    //Movements
     public void moveRight() {
         x += speed;
         setBounds(x, y, 90, 90);
@@ -40,5 +43,14 @@ public class Plane extends JLabel {
     public void moveDown() {
         y += speed;
         setBounds(x, y, 90, 90);
+    }
+
+    //Methods
+    public int getXPosition() {
+        return x;
+    }
+
+    public int getYPosition() {
+        return y;
     }
 }
