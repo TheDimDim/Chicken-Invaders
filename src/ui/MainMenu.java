@@ -48,6 +48,7 @@ public class MainMenu extends JPanel {
         settingsButton.setBounds(350, 300, 200, 40);
         backgroundLabel.add(settingsButton);
 
+        //How to play button
         JButton howToPlayButton = new JButton("How to Play");
         howToPlayButton.setBounds(350, 360, 200, 40);
         backgroundLabel.add(howToPlayButton);
@@ -55,12 +56,20 @@ public class MainMenu extends JPanel {
         howToPlayButton.addActionListener(new ActionListener() {
             @Override
             public void actionPerformed(ActionEvent e) {
-                JOptionPane.showMessageDialog(null, "Controls:\n" +
-                                "Arrow Keys / WASD: Move\n" + "Space: Shoot\n" +
-                                "P: Pause\n" + "Esc: Back to Main Menu");
+                JOptionPane.showMessageDialog( null,
+                        "Controls:\n" +
+                                "Right Arrow / D: Move Right\n" +
+                                "Left Arrow / A: Move Left\n" +
+                                "Up Arrow / W: Move Up\n" +
+                                "Down Arrow / S: Move Down\n" +
+                                "Space: Shoot\n" +
+                                "P: Pause / Resume\n" +
+                                "Esc: Back to Main Menu / End Game\n");
             }
         });
 
+
+        //Exit button
         JButton exitButton = new JButton("Exit");
         exitButton.setBounds(350, 420, 200, 40);
         backgroundLabel.add(exitButton);
