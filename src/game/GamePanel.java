@@ -6,10 +6,13 @@ import javax.swing.*;
 import java.awt.*;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
+import java.awt.event.KeyEvent;
+import java.awt.event.KeyListener;
 
-public class GamePanel extends JPanel {
+public class GamePanel extends JPanel implements KeyListener {
 
     private GameMain gameMain;
+    private Plane plane;
 
     public GamePanel(GameMain gameMain) {
         this.gameMain = gameMain;
@@ -29,12 +32,12 @@ public class GamePanel extends JPanel {
         label.setBounds(250, 220, 300, 50);
         backgroundLabel.add(label);
 
-        Plane plane = new Plane();
+        plane = new Plane();
         backgroundLabel.add(plane);
 
         //Back to menu button
         JButton backButton = new JButton("Back to Menu");
-        backButton.setBounds(300, 300, 200, 40);
+        backButton.setBounds(200, 0, 200, 40);
         backgroundLabel.add(backButton);
 
         backButton.addActionListener(new ActionListener() {
@@ -43,5 +46,39 @@ public class GamePanel extends JPanel {
                 gameMain.showMainMenu();
             }
         });
+
+        setFocusable(true);
+        addKeyListener(this);
+    }
+
+    @Override
+    public void keyPressed(KeyEvent e) {
+        if (e.getKeyCode() == KeyEvent.VK_RIGHT || e.getKeyCode() == KeyEvent.VK_D) {
+            plane.moveRight();
+        }
+
+        if (e.getKeyCode() == KeyEvent.VK_LEFT || e.getKeyCode() == KeyEvent.VK_A) {
+            plane.moveLeft();
+        }
+
+        if (e.getKeyCode() == KeyEvent.VK_UP || e.getKeyCode() == KeyEvent.VK_W) {
+            plane.moveUp();
+        }
+
+        if (e.getKeyCode() == KeyEvent.VK_DOWN || e.getKeyCode() == KeyEvent.VK_S) {
+            plane.moveDown();
+        }
+
+        if (e.getKeyCode() == KeyEvent.VK_ESCAPE) {
+            gameMain.showMainMenu();
+        }
+    }
+
+    @Override
+    public void keyReleased(KeyEvent e) {
+    }
+
+    @Override
+    public void keyTyped(KeyEvent e) {
     }
 }

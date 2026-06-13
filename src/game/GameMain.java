@@ -25,6 +25,7 @@ public class GameMain extends JFrame {
 
         revalidate();
         repaint();
+        gamePanel.requestFocusInWindow();
     }
 
     public void showMainMenu() {
