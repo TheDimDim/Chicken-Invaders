@@ -16,21 +16,21 @@ public class MainMenu extends JPanel {
         setLayout(null);
 
         ImageIcon background = new ImageIcon("C:\\Users\\Asus\\Downloads\\background.jpg");
-        Image backgroundImage = background.getImage().getScaledInstance(900, 700, Image.SCALE_SMOOTH);
+        Image backgroundImage = background.getImage().getScaledInstance(800, 600, Image.SCALE_SMOOTH);
 
         JLabel backgroundLabel = new JLabel(new ImageIcon(backgroundImage));
-        backgroundLabel.setBounds(0, 0, 900, 700);
+        backgroundLabel.setBounds(0, 0, 800, 600);
         backgroundLabel.setLayout(null);
         add(backgroundLabel);
 
         JLabel titleLabel = new JLabel("Chicken Invaders", SwingConstants.CENTER);
-        titleLabel.setBounds(225, 70, 450, 50);
+        titleLabel.setBounds(175, 60, 450, 60);
         titleLabel.setForeground(Color.WHITE);
-        titleLabel.setFont(new Font("Arial", Font.BOLD, 50));
+        titleLabel.setFont(new Font("Arial", Font.BOLD, 42));
         backgroundLabel.add(titleLabel);
 
         JButton newGameButton = new JButton("New Game");
-        newGameButton.setBounds(350, 180, 200, 40);
+        newGameButton.setBounds(300, 160, 200, 40);
         backgroundLabel.add(newGameButton);
 
         newGameButton.addActionListener(new ActionListener() {
@@ -41,16 +41,16 @@ public class MainMenu extends JPanel {
         });
 
         JButton highScoresButton = new JButton("High Scores");
-        highScoresButton.setBounds(350, 240, 200, 40);
+        highScoresButton.setBounds(300, 220, 200, 40);
         backgroundLabel.add(highScoresButton);
 
         JButton settingsButton = new JButton("Settings");
-        settingsButton.setBounds(350, 300, 200, 40);
+        settingsButton.setBounds(300, 280, 200, 40);
         backgroundLabel.add(settingsButton);
 
         //How to play button
         JButton howToPlayButton = new JButton("How to Play");
-        howToPlayButton.setBounds(350, 360, 200, 40);
+        howToPlayButton.setBounds(300, 340, 200, 40);
         backgroundLabel.add(howToPlayButton);
 
         howToPlayButton.addActionListener(new ActionListener() {
@@ -64,14 +64,15 @@ public class MainMenu extends JPanel {
                                 "Down Arrow / S: Move Down\n" +
                                 "Space: Shoot\n" +
                                 "P: Pause / Resume\n" +
-                                "Esc: Back to Main Menu / End Game\n");
+                                "Esc: Back to Main Menu / End Game\n" +
+                                "M: Open Sound Settings (Optional)");
             }
         });
 
 
         //Exit button
         JButton exitButton = new JButton("Exit");
-        exitButton.setBounds(350, 420, 200, 40);
+        exitButton.setBounds(300, 400, 200, 40);
         backgroundLabel.add(exitButton);
 
         exitButton.addActionListener(new ActionListener() {
