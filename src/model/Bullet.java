@@ -1,5 +1,7 @@
 package model;
 
+import model.enemy.Enemy;
+
 import javax.swing.*;
 import java.awt.*;
 
@@ -32,5 +34,9 @@ public class Bullet extends JLabel {
 
     public int getY() {
         return y;
+    }
+
+    public boolean hitEnemy(Enemy enemy) {
+        return getBounds().intersects(enemy.getBounds());
     }
 }
