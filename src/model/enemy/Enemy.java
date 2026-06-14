@@ -7,12 +7,16 @@ public class Enemy extends JLabel {
     protected int x;
     protected int y;
     protected int health;
+    protected int score;
+
+
 
     //Constructor
-    public Enemy(int x, int y, int health) {
+    public Enemy(int x, int y, int health ,int score) {
         this.x = x;
         this.y = y;
         this.health = health;
+        this.score = score;
     }
     //Methods
     public void damage() {
@@ -22,4 +26,10 @@ public class Enemy extends JLabel {
     public boolean isDead() {
         return health <= 0;
     }
+
+    public int getScore() {
+        return score;
+    }
+
+
 }

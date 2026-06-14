@@ -21,11 +21,12 @@ public class GamePanel extends JPanel implements KeyListener {
     private java.util.ArrayList<Bullet> bullets;
     private Timer timer;
     private long lastBulletShotTime;
+    private int score;
+    private JLabel scoreLabel;
 
 
     //Constructor
     public GamePanel(GameMain gameMain) {
-
         this.gameMain = gameMain;
         setLayout(null);
         lastBulletShotTime = 0;
@@ -64,6 +65,14 @@ public class GamePanel extends JPanel implements KeyListener {
         Enemy zigzagEnemy = new ZigzagEnemy(230, 80);
         enemies.add(zigzagEnemy);
         backgroundLabel.add(zigzagEnemy);
+
+        //Score
+        score = 0;
+        scoreLabel = new JLabel("Score: " + score);
+        scoreLabel.setForeground(Color.WHITE);
+        scoreLabel.setBounds(20, 0, 200, 40);
+        backgroundLabel.add(scoreLabel);
+
 
 
         //Back to menu button
@@ -109,6 +118,8 @@ public class GamePanel extends JPanel implements KeyListener {
                     if (enemy.isDead()) {
                         backgroundLabel.remove(enemy);
                         enemies.remove(j);
+                        score += enemy.getScore();
+                        scoreLabel.setText("Score: " + score);
                     }
 
                     break;
