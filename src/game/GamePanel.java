@@ -6,10 +6,7 @@ import model.enemy.*;
 
 import javax.swing.*;
 import java.awt.*;
-import java.awt.event.ActionEvent;
-import java.awt.event.ActionListener;
-import java.awt.event.KeyEvent;
-import java.awt.event.KeyListener;
+import java.awt.event.*;
 
 public class GamePanel extends JPanel implements KeyListener {
 
@@ -21,7 +18,6 @@ public class GamePanel extends JPanel implements KeyListener {
     private java.util.ArrayList<Bullet> bullets;
     private Timer timer;
     private long lastBulletShotTime;
-    private int enemyDirection = 1;
 
     private int score;
     private JLabel scoreLabel;
@@ -35,6 +31,8 @@ public class GamePanel extends JPanel implements KeyListener {
     private boolean gameOver;
     private JLabel gameOverLabel;
 
+    private int rows = 5;
+    private int cols = 8;
 
     //Constructor
     public GamePanel(GameMain gameMain) {
@@ -57,20 +55,7 @@ public class GamePanel extends JPanel implements KeyListener {
         bullets = new java.util.ArrayList<>();
         enemies = new java.util.ArrayList<>();
 
-        Enemy normalEnemy = new NormalEnemy(370, 80);
-        Enemy shooterEnemy = new ShooterEnemy(440, 80);
-        Enemy fastEnemy = new FastEnemy(300, 80);
-        Enemy zigzagEnemy = new ZigzagEnemy(230, 80);
-
-        enemies.add(normalEnemy);
-        enemies.add(shooterEnemy);
-        enemies.add(fastEnemy);
-        enemies.add(zigzagEnemy);
-
-        backgroundLabel.add(normalEnemy);
-        backgroundLabel.add(shooterEnemy);
-        backgroundLabel.add(fastEnemy);
-        backgroundLabel.add(zigzagEnemy);
+        grid(); // 🔥 فقط اینو داریم
 
         //Score
         score = 0;
@@ -104,19 +89,12 @@ public class GamePanel extends JPanel implements KeyListener {
         gameOverLabel.setVisible(false);
         backgroundLabel.add(gameOverLabel);
 
-
-        //Back to menu button
+        //Back button
         JButton backButton = new JButton("Back to Menu");
         backButton.setBounds(200, 0, 200, 40);
         backgroundLabel.add(backButton);
 
-        backButton.addActionListener(new ActionListener() {
-            @Override
-            public void actionPerformed(ActionEvent e) {
-                gameMain.showMainMenu();
-            }
-        });
-
+        backButton.addActionListener(e -> gameMain.showMainMenu());
 
         setFocusable(true);
         addKeyListener(this);
@@ -130,11 +108,41 @@ public class GamePanel extends JPanel implements KeyListener {
                 }
             }
         });
+
         timer.start();
     }
 
+    //GRID SYSTEM
+    public void grid() {
 
-    //Bullets Movement
+        enemies.clear();
+
+        for (int i = 0; i < rows; i++) {
+
+            for (int j = 0; j < cols; j++) {
+
+                Enemy enemy;
+
+                int x = 100 + j * 70;
+                int y = 50 + i * 60;
+
+                if (i == 0) {
+                    enemy = new ShooterEnemy(x, y);
+                } else if (i == 1 || i == 2) {
+                    enemy = new FastEnemy(x, y);
+                } else if (i == 3) {
+                    enemy = new ZigzagEnemy(x, y);
+                } else {
+                    enemy = new NormalEnemy(x, y);
+                }
+
+                enemies.add(enemy);
+                backgroundLabel.add(enemy);
+            }
+        }
+    }
+
+    //Bullets
     public void moveBullets() {
 
         for (int i = 0; i < bullets.size(); i++) {
@@ -158,8 +166,6 @@ public class GamePanel extends JPanel implements KeyListener {
 
                         backgroundLabel.remove(enemy);
                         enemies.remove(j);
-                        score += enemy.getScore();
-                        scoreLabel.setText("Score: " + score);
                     }
 
                     break;
@@ -177,52 +183,37 @@ public class GamePanel extends JPanel implements KeyListener {
         backgroundLabel.repaint();
     }
 
-
-    //Enemies Movement
+    //Enemies
     public void moveEnemies() {
-
-        boolean hitEdge = false;
 
         for (int i = 0; i < enemies.size(); i++) {
 
             Enemy enemy = enemies.get(i);
 
-            enemy.setLocation(enemy.getX() + enemyDirection, enemy.getY());
-
-            if (enemy.getX() <= 0 || enemy.getX() >= 740) {
-                hitEdge = true;
-            }
+            enemy.moveDown();
 
             if (enemy.hitPlane(plane)) {
+
                 backgroundLabel.remove(enemy);
                 enemies.remove(i);
                 i--;
-                loseLife();
-            }
 
-            else if (enemy.isOutOfScreen()) {
+                loseLife();
+
+            } else if (enemy.isOutOfScreen()) {
+
                 backgroundLabel.remove(enemy);
                 enemies.remove(i);
                 i--;
+
                 loseLife();
-            }
-        }
-
-        if (hitEdge) {
-            enemyDirection *= -1;
-
-            for (int i = 0; i < enemies.size(); i++) {
-                Enemy enemy = enemies.get(i);
-                enemy.setLocation(enemy.getX(), enemy.getY() + 20);
             }
         }
 
         backgroundLabel.repaint();
     }
 
-
-
-    //Lose Life
+    //Lose life
     public void loseLife() {
 
         if (lives > 0) {
@@ -238,38 +229,36 @@ public class GamePanel extends JPanel implements KeyListener {
         }
     }
 
-
     //Keyboard
     @Override
     public void keyPressed(KeyEvent e) {
 
-        if ((e.getKeyCode() == KeyEvent.VK_RIGHT || e.getKeyCode() == KeyEvent.VK_D) && !paused && !gameOver) {
-            plane.moveRight();
-        }
+        if (!paused && !gameOver) {
 
-        if ((e.getKeyCode() == KeyEvent.VK_LEFT || e.getKeyCode() == KeyEvent.VK_A) && !paused && !gameOver) {
-            plane.moveLeft();
-        }
+            if (e.getKeyCode() == KeyEvent.VK_RIGHT || e.getKeyCode() == KeyEvent.VK_D)
+                plane.moveRight();
 
-        if ((e.getKeyCode() == KeyEvent.VK_UP || e.getKeyCode() == KeyEvent.VK_W) && !paused && !gameOver) {
-            plane.moveUp();
-        }
+            if (e.getKeyCode() == KeyEvent.VK_LEFT || e.getKeyCode() == KeyEvent.VK_A)
+                plane.moveLeft();
 
-        if ((e.getKeyCode() == KeyEvent.VK_DOWN || e.getKeyCode() == KeyEvent.VK_S) && !paused && !gameOver) {
-            plane.moveDown();
-        }
+            if (e.getKeyCode() == KeyEvent.VK_UP || e.getKeyCode() == KeyEvent.VK_W)
+                plane.moveUp();
 
-        if (e.getKeyCode() == KeyEvent.VK_SPACE && !paused && !gameOver) {
+            if (e.getKeyCode() == KeyEvent.VK_DOWN || e.getKeyCode() == KeyEvent.VK_S)
+                plane.moveDown();
 
-            long currentTime = System.currentTimeMillis();
+            if (e.getKeyCode() == KeyEvent.VK_SPACE) {
 
-            if (currentTime - lastBulletShotTime >= 300) {
+                long now = System.currentTimeMillis();
 
-                Bullet bullet = new Bullet(plane.getXPosition() + 28, plane.getYPosition());
-                bullets.add(bullet);
-                backgroundLabel.add(bullet);
+                if (now - lastBulletShotTime >= 300) {
 
-                lastBulletShotTime = currentTime;
+                    Bullet bullet = new Bullet(plane.getXPosition() + 28, plane.getYPosition());
+                    bullets.add(bullet);
+                    backgroundLabel.add(bullet);
+
+                    lastBulletShotTime = now;
+                }
             }
         }
 
@@ -283,12 +272,9 @@ public class GamePanel extends JPanel implements KeyListener {
         }
     }
 
+    @Override
+    public void keyReleased(KeyEvent e) {}
 
     @Override
-    public void keyReleased(KeyEvent e) {
-    }
-
-    @Override
-    public void keyTyped(KeyEvent e) {
-    }
+    public void keyTyped(KeyEvent e) {}
 }
