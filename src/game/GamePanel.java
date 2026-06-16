@@ -18,13 +18,18 @@ public class GamePanel extends JPanel implements KeyListener {
     private java.util.ArrayList<Bullet> bullets;
     private Timer timer;
     private long lastBulletShotTime;
+    //ENEMY
     private int enemyDirection;
+    private int enemySpeed;
 
     private int score;
     private JLabel scoreLabel;
 
     private int lives;
     private JLabel livesLabel;
+
+    private int stage;
+    private JLabel stageLabel;
 
     private boolean paused;
     private JLabel pauseLabel;
@@ -41,7 +46,11 @@ public class GamePanel extends JPanel implements KeyListener {
         this.gameMain = gameMain;
         setLayout(null);
         lastBulletShotTime = 0;
+        stage = 1;
+
+        //ENEMY
         enemyDirection = 1;
+        enemySpeed = 1;
 
         ImageIcon background = new ImageIcon("C:\\Users\\Asus\\Downloads\\background.jpg");
         Image backgroundImage = background.getImage().getScaledInstance(800, 600, Image.SCALE_SMOOTH);
@@ -71,6 +80,12 @@ public class GamePanel extends JPanel implements KeyListener {
         livesLabel.setForeground(Color.WHITE);
         livesLabel.setBounds(50, 0, 200, 40);
         backgroundLabel.add(livesLabel);
+
+        //Stages
+        stageLabel = new JLabel("Stage: " + stage);
+        stageLabel.setForeground(Color.WHITE);
+        stageLabel.setBounds(650, 0, 120, 40);
+        backgroundLabel.add(stageLabel);
 
         //Pause
         paused = false;
@@ -123,13 +138,23 @@ public class GamePanel extends JPanel implements KeyListener {
                 Enemy enemy;
                 int x = 100 + j * 70;
                 int y = 50 + i * 60;
+                if (stage == 1) {
+                    enemy = new NormalEnemy(x, y);
 
-                if (i == 0) {
-                    enemy = new ShooterEnemy(x, y);
-                } else if (i == 1 || i == 2) {
-                    enemy = new FastEnemy(x, y);
-                } else if (i == 3) {
-                    enemy = new ZigzagEnemy(x, y);
+                } else if (stage == 2) {
+                    if (i % 2 == 0) {
+                        enemy = new NormalEnemy(x, y);
+                    } else {
+                        enemy = new FastEnemy(x, y);
+                    }
+
+                } else if (stage == 3) {
+                    if (i % 2 == 0) {
+                        enemy = new NormalEnemy(x, y);
+                    } else {
+                        enemy = new ZigzagEnemy(x, y);
+                    }
+
                 } else {
                     enemy = new NormalEnemy(x, y);
                 }
@@ -182,8 +207,7 @@ public class GamePanel extends JPanel implements KeyListener {
         for (int i = 0; i < enemies.size(); i++) {
 
             Enemy enemy = enemies.get(i);
-
-            enemy.moveHorizontal(enemyDirection);
+            enemy.moveHorizontal(enemyDirection * enemySpeed);
 
             if (enemy.hitEdge()) {
                 hitEdge = true;
@@ -214,10 +238,14 @@ public class GamePanel extends JPanel implements KeyListener {
             for (int i = 0; i < enemies.size(); i++) {
 
                 Enemy enemy = enemies.get(i);
-                enemy.moveVertical(10);
+                enemy.moveVertical(15);
             }
         }
-
+        if (enemies.size() == 0) {
+            stage++;
+            stageLabel.setText("Stage: " + stage);
+            grid();
+        }
         backgroundLabel.repaint();
     }
 
