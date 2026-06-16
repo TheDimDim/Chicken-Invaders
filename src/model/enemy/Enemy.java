@@ -41,11 +41,26 @@ public class Enemy extends JLabel {
     public boolean isOutOfScreen() {
         return y > 540;
     }
+
+    public boolean hitEdge() {
+        return x <= 0 || x >= 740;
+    }
     public boolean hitPlane(Plane plane) {
         if (getBounds().intersects(plane.getBounds())) {
             return true;
         }
         return false;
+    }
+
+
+    public void moveHorizontal(int direction) {
+        x += direction;
+        setBounds(x, (int)y, 60, 60);
+    }
+
+    public void moveVertical(int amount) {
+        y += amount;
+        setBounds(x, (int)y, 60, 60);
     }
 
 }

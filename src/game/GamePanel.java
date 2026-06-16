@@ -18,6 +18,7 @@ public class GamePanel extends JPanel implements KeyListener {
     private java.util.ArrayList<Bullet> bullets;
     private Timer timer;
     private long lastBulletShotTime;
+    private int enemyDirection;
 
     private int score;
     private JLabel scoreLabel;
@@ -40,6 +41,7 @@ public class GamePanel extends JPanel implements KeyListener {
         this.gameMain = gameMain;
         setLayout(null);
         lastBulletShotTime = 0;
+        enemyDirection = 1;
 
         ImageIcon background = new ImageIcon("C:\\Users\\Asus\\Downloads\\background.jpg");
         Image backgroundImage = background.getImage().getScaledInstance(800, 600, Image.SCALE_SMOOTH);
@@ -55,8 +57,7 @@ public class GamePanel extends JPanel implements KeyListener {
         bullets = new java.util.ArrayList<>();
         enemies = new java.util.ArrayList<>();
 
-        grid(); // 🔥 فقط اینو داریم
-
+        grid();
         //Score
         score = 0;
         scoreLabel = new JLabel("Score: " + score);
@@ -116,13 +117,10 @@ public class GamePanel extends JPanel implements KeyListener {
     public void grid() {
 
         enemies.clear();
-
         for (int i = 0; i < rows; i++) {
-
             for (int j = 0; j < cols; j++) {
 
                 Enemy enemy;
-
                 int x = 100 + j * 70;
                 int y = 50 + i * 60;
 
@@ -146,14 +144,10 @@ public class GamePanel extends JPanel implements KeyListener {
     public void moveBullets() {
 
         for (int i = 0; i < bullets.size(); i++) {
-
             Bullet bullet = bullets.get(i);
             bullet.movement();
-
             for (int j = 0; j < enemies.size(); j++) {
-
                 Enemy enemy = enemies.get(j);
-
                 if (bullet.hitEnemy(enemy)) {
 
                     backgroundLabel.remove(bullet);
@@ -161,13 +155,10 @@ public class GamePanel extends JPanel implements KeyListener {
                     i--;
 
                     enemy.damage();
-
                     if (enemy.isDead()) {
-
                         backgroundLabel.remove(enemy);
                         enemies.remove(j);
                     }
-
                     break;
                 }
             }
@@ -183,14 +174,20 @@ public class GamePanel extends JPanel implements KeyListener {
         backgroundLabel.repaint();
     }
 
-    //Enemies
+    //Enemies Movement
     public void moveEnemies() {
+
+        boolean hitEdge = false;
 
         for (int i = 0; i < enemies.size(); i++) {
 
             Enemy enemy = enemies.get(i);
 
-            enemy.moveDown();
+            enemy.moveHorizontal(enemyDirection);
+
+            if (enemy.hitEdge()) {
+                hitEdge = true;
+            }
 
             if (enemy.hitPlane(plane)) {
 
@@ -207,6 +204,17 @@ public class GamePanel extends JPanel implements KeyListener {
                 i--;
 
                 loseLife();
+            }
+        }
+
+        if (hitEdge) {
+
+            enemyDirection *= -1;
+
+            for (int i = 0; i < enemies.size(); i++) {
+
+                Enemy enemy = enemies.get(i);
+                enemy.moveVertical(10);
             }
         }
 
