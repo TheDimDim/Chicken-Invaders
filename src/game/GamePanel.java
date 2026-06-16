@@ -1,6 +1,7 @@
 package game;
 
 import model.Bullet;
+import model.Egg;
 import model.Plane;
 import model.enemy.*;
 
@@ -11,16 +12,22 @@ import java.awt.event.*;
 public class GamePanel extends JPanel implements KeyListener {
 
     //Fields
-    private java.util.ArrayList<Enemy> enemies;
     private GameMain gameMain;
     private Plane plane;
     private JLabel backgroundLabel;
     private java.util.ArrayList<Bullet> bullets;
     private Timer timer;
     private long lastBulletShotTime;
+
+
     //ENEMY
+    private java.util.ArrayList<Enemy> enemies;
     private int enemyDirection;
     private int enemySpeed;
+
+    //EGG
+    private java.util.ArrayList<Egg> eggs;
+    private long lastEggDropTime;
 
     private int score;
     private JLabel scoreLabel;
@@ -46,11 +53,13 @@ public class GamePanel extends JPanel implements KeyListener {
         this.gameMain = gameMain;
         setLayout(null);
         lastBulletShotTime = 0;
+        lastEggDropTime = 0;
         stage = 1;
 
         //ENEMY
         enemyDirection = 1;
         enemySpeed = 1;
+        eggs = new java.util.ArrayList<>();
 
         ImageIcon background = new ImageIcon("C:\\Users\\Asus\\Downloads\\background.jpg");
         Image backgroundImage = background.getImage().getScaledInstance(800, 600, Image.SCALE_SMOOTH);
@@ -121,6 +130,8 @@ public class GamePanel extends JPanel implements KeyListener {
                 if (!paused && !gameOver) {
                     moveBullets();
                     moveEnemies();
+                    dropEgg();
+                    moveEggs();
                 }
             }
         });
@@ -199,6 +210,52 @@ public class GamePanel extends JPanel implements KeyListener {
         backgroundLabel.repaint();
     }
 
+    //Drop Egg
+    public void dropEgg() {
+
+        long currentTime = System.currentTimeMillis();
+
+        if (currentTime - lastEggDropTime >= 3000 && enemies.size() > 0) {
+
+            int randomIndex = (int)(Math.random() * enemies.size());
+            Enemy enemy = enemies.get(randomIndex);
+
+            Egg egg = new Egg(enemy.getXPosition() + 15, enemy.getYPosition() + 50);
+
+            eggs.add(egg);
+            backgroundLabel.add(egg);
+
+            lastEggDropTime = currentTime;
+        }
+    }
+
+    //Eggs Movement
+    public void moveEggs() {
+
+        for (int i = 0; i < eggs.size(); i++) {
+
+            Egg egg = eggs.get(i);
+            egg.movement();
+
+            if (egg.hitPlane(plane)) {
+
+                backgroundLabel.remove(egg);
+                eggs.remove(i);
+                i--;
+
+                loseLife();
+
+            } else if (egg.getY() > 600) {
+
+                backgroundLabel.remove(egg);
+                eggs.remove(i);
+                i--;
+            }
+        }
+
+        backgroundLabel.repaint();
+    }
+
     //Enemies Movement
     public void moveEnemies() {
 
@@ -241,9 +298,18 @@ public class GamePanel extends JPanel implements KeyListener {
                 enemy.moveVertical(15);
             }
         }
+
         if (enemies.size() == 0) {
             stage++;
+            enemySpeed = stage;
             stageLabel.setText("Stage: " + stage);
+            plane.resetPosition();
+
+            for (int i = 0; i < bullets.size(); i++) {
+                backgroundLabel.remove(bullets.get(i));
+            }
+            bullets.clear();
+
             grid();
         }
         backgroundLabel.repaint();

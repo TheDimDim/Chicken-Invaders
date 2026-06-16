@@ -53,4 +53,10 @@ public class Plane extends JLabel {
     public int getYPosition() {
         return y;
     }
+
+    public void resetPosition() {
+        x = 355;
+        y = 460;
+        setBounds(x, y, 90, 90);
+    }
 }

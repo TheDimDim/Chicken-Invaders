@@ -52,6 +52,14 @@ public class Enemy extends JLabel {
         return false;
     }
 
+    public int getXPosition() {
+        return x;
+    }
+
+    public int getYPosition() {
+        return (int)y;
+    }
+
 
     public void moveHorizontal(int direction) {
         x += direction;

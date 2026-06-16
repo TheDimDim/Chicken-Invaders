@@ -16,7 +16,7 @@ public class Bullet extends JLabel {
     public Bullet(int x, int y) {
         this.x = x;
         this.y = y;
-        this.speed = 10;
+        this.speed = 15;
 
         ImageIcon bulletIcon = new ImageIcon("C:/Users/Asus/Downloads/airplan-20260613T102345Z-3-001/airplan/shot.png");
         Image bulletImage = bulletIcon.getImage().getScaledInstance(20, 50, Image.SCALE_SMOOTH);
