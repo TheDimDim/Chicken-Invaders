@@ -34,7 +34,7 @@ public class Enemy extends JLabel {
     }
 
     public void moveDown() {
-        y += 0.4;
+        y += 0.2;
         setBounds(x, (int)y, 60, 60);
     }
 

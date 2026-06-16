@@ -6,10 +6,7 @@ import model.enemy.*;
 
 import javax.swing.*;
 import java.awt.*;
-import java.awt.event.ActionEvent;
-import java.awt.event.ActionListener;
-import java.awt.event.KeyEvent;
-import java.awt.event.KeyListener;
+import java.awt.event.*;
 
 public class GamePanel extends JPanel implements KeyListener {
 
@@ -34,9 +31,12 @@ public class GamePanel extends JPanel implements KeyListener {
     private boolean gameOver;
     private JLabel gameOverLabel;
 
+    private int rows = 5;
+    private int cols = 8;
 
     //Constructor
     public GamePanel(GameMain gameMain) {
+
         this.gameMain = gameMain;
         setLayout(null);
         lastBulletShotTime = 0;
@@ -52,24 +52,10 @@ public class GamePanel extends JPanel implements KeyListener {
         plane = new Plane();
         backgroundLabel.add(plane);
 
-        bullets = new java.util.ArrayList<Bullet>();
-        enemies = new java.util.ArrayList<Enemy>();
+        bullets = new java.util.ArrayList<>();
+        enemies = new java.util.ArrayList<>();
 
-        Enemy normalEnemy = new NormalEnemy(370, 80);
-        enemies.add(normalEnemy);
-        backgroundLabel.add(normalEnemy);
-
-        Enemy shooterEnemy = new ShooterEnemy(440, 80);
-        enemies.add(shooterEnemy);
-        backgroundLabel.add(shooterEnemy);
-
-        Enemy fastEnemy = new FastEnemy(300, 80);
-        enemies.add(fastEnemy);
-        backgroundLabel.add(fastEnemy);
-
-        Enemy zigzagEnemy = new ZigzagEnemy(230, 80);
-        enemies.add(zigzagEnemy);
-        backgroundLabel.add(zigzagEnemy);
+        grid(); // 🔥 فقط اینو داریم
 
         //Score
         score = 0;
@@ -103,19 +89,12 @@ public class GamePanel extends JPanel implements KeyListener {
         gameOverLabel.setVisible(false);
         backgroundLabel.add(gameOverLabel);
 
-
-        //Back to menu button
+        //Back button
         JButton backButton = new JButton("Back to Menu");
         backButton.setBounds(200, 0, 200, 40);
         backgroundLabel.add(backButton);
 
-        backButton.addActionListener(new ActionListener() {
-            @Override
-            public void actionPerformed(ActionEvent e) {
-                gameMain.showMainMenu();
-            }
-        });
-
+        backButton.addActionListener(e -> gameMain.showMainMenu());
 
         setFocusable(true);
         addKeyListener(this);
@@ -129,19 +108,54 @@ public class GamePanel extends JPanel implements KeyListener {
                 }
             }
         });
+
         timer.start();
     }
 
-    //Bullets Movement
+    //GRID SYSTEM
+    public void grid() {
+
+        enemies.clear();
+
+        for (int i = 0; i < rows; i++) {
+
+            for (int j = 0; j < cols; j++) {
+
+                Enemy enemy;
+
+                int x = 100 + j * 70;
+                int y = 50 + i * 60;
+
+                if (i == 0) {
+                    enemy = new ShooterEnemy(x, y);
+                } else if (i == 1 || i == 2) {
+                    enemy = new FastEnemy(x, y);
+                } else if (i == 3) {
+                    enemy = new ZigzagEnemy(x, y);
+                } else {
+                    enemy = new NormalEnemy(x, y);
+                }
+
+                enemies.add(enemy);
+                backgroundLabel.add(enemy);
+            }
+        }
+    }
+
+    //Bullets
     public void moveBullets() {
+
         for (int i = 0; i < bullets.size(); i++) {
+
             Bullet bullet = bullets.get(i);
             bullet.movement();
 
             for (int j = 0; j < enemies.size(); j++) {
+
                 Enemy enemy = enemies.get(j);
 
                 if (bullet.hitEnemy(enemy)) {
+
                     backgroundLabel.remove(bullet);
                     bullets.remove(i);
                     i--;
@@ -149,10 +163,9 @@ public class GamePanel extends JPanel implements KeyListener {
                     enemy.damage();
 
                     if (enemy.isDead()) {
+
                         backgroundLabel.remove(enemy);
                         enemies.remove(j);
-                        score += enemy.getScore();
-                        scoreLabel.setText("Score: " + score);
                     }
 
                     break;
@@ -160,6 +173,7 @@ public class GamePanel extends JPanel implements KeyListener {
             }
 
             if (i >= 0 && i < bullets.size() && bullet.getY() < 0) {
+
                 backgroundLabel.remove(bullet);
                 bullets.remove(i);
                 i--;
@@ -169,33 +183,25 @@ public class GamePanel extends JPanel implements KeyListener {
         backgroundLabel.repaint();
     }
 
-    //Lose Life
-    public void loseLife() {
-        if (lives > 0) {
-            lives--;
-            livesLabel.setText("Lives: " + lives);
-
-            if (lives == 0) {
-                gameOver = true;
-                gameOverLabel.setVisible(true);
-            }
-        }
-    }
-
-    //Enemies Movement
+    //Enemies
     public void moveEnemies() {
+
         for (int i = 0; i < enemies.size(); i++) {
+
             Enemy enemy = enemies.get(i);
 
             enemy.moveDown();
 
             if (enemy.hitPlane(plane)) {
+
                 backgroundLabel.remove(enemy);
                 enemies.remove(i);
                 i--;
 
                 loseLife();
+
             } else if (enemy.isOutOfScreen()) {
+
                 backgroundLabel.remove(enemy);
                 enemies.remove(i);
                 i--;
@@ -207,28 +213,53 @@ public class GamePanel extends JPanel implements KeyListener {
         backgroundLabel.repaint();
     }
 
+    //Lose life
+    public void loseLife() {
+
+        if (lives > 0) {
+
+            lives--;
+            livesLabel.setText("Lives: " + lives);
+
+            if (lives == 0) {
+
+                gameOver = true;
+                gameOverLabel.setVisible(true);
+            }
+        }
+    }
 
     //Keyboard
     @Override
     public void keyPressed(KeyEvent e) {
-        if ((e.getKeyCode() == KeyEvent.VK_RIGHT || e.getKeyCode() == KeyEvent.VK_D) && !paused && !gameOver) {
-            plane.moveRight();
-        }
 
-        if ((e.getKeyCode() == KeyEvent.VK_LEFT || e.getKeyCode() == KeyEvent.VK_A) && !paused && !gameOver) {
-            plane.moveLeft();
-        }
+        if (!paused && !gameOver) {
 
-        if ((e.getKeyCode() == KeyEvent.VK_UP || e.getKeyCode() == KeyEvent.VK_W) && !paused && !gameOver) {
-            plane.moveUp();
-        }
+            if (e.getKeyCode() == KeyEvent.VK_RIGHT || e.getKeyCode() == KeyEvent.VK_D)
+                plane.moveRight();
 
-        if ((e.getKeyCode() == KeyEvent.VK_DOWN || e.getKeyCode() == KeyEvent.VK_S) && !paused && !gameOver) {
-            plane.moveDown();
-        }
+            if (e.getKeyCode() == KeyEvent.VK_LEFT || e.getKeyCode() == KeyEvent.VK_A)
+                plane.moveLeft();
 
-        if (e.getKeyCode() == KeyEvent.VK_ESCAPE) {
-            gameMain.showMainMenu();
+            if (e.getKeyCode() == KeyEvent.VK_UP || e.getKeyCode() == KeyEvent.VK_W)
+                plane.moveUp();
+
+            if (e.getKeyCode() == KeyEvent.VK_DOWN || e.getKeyCode() == KeyEvent.VK_S)
+                plane.moveDown();
+
+            if (e.getKeyCode() == KeyEvent.VK_SPACE) {
+
+                long now = System.currentTimeMillis();
+
+                if (now - lastBulletShotTime >= 300) {
+
+                    Bullet bullet = new Bullet(plane.getXPosition() + 28, plane.getYPosition());
+                    bullets.add(bullet);
+                    backgroundLabel.add(bullet);
+
+                    lastBulletShotTime = now;
+                }
+            }
         }
 
         if (e.getKeyCode() == KeyEvent.VK_P && !gameOver) {
@@ -236,26 +267,14 @@ public class GamePanel extends JPanel implements KeyListener {
             pauseLabel.setVisible(paused);
         }
 
-        if (e.getKeyCode() == KeyEvent.VK_SPACE && !paused && !gameOver) {
-            long currentTime = System.currentTimeMillis();
-
-            if (currentTime - lastBulletShotTime >= 300) {
-                Bullet bullet = new Bullet(plane.getXPosition() + 28, plane.getYPosition());
-                bullets.add(bullet);
-                backgroundLabel.add(bullet);
-                backgroundLabel.repaint();
-
-                lastBulletShotTime = currentTime;
-            }
+        if (e.getKeyCode() == KeyEvent.VK_ESCAPE) {
+            gameMain.showMainMenu();
         }
     }
 
+    @Override
+    public void keyReleased(KeyEvent e) {}
 
     @Override
-    public void keyReleased(KeyEvent e) {
-    }
-
-    @Override
-    public void keyTyped(KeyEvent e) {
-    }
+    public void keyTyped(KeyEvent e) {}
 }
