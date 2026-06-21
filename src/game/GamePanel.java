@@ -197,8 +197,11 @@ public class GamePanel extends JPanel implements KeyListener {
                     cell.hit();
                     backgroundLabel.remove(bullet);
                     bullets.remove(i--);
-
                     if (cell.isDestroyed()) {
+
+                        score += cell.getEnemy().getScore();
+                        scoreLabel.setText("Score: " + score);
+
                         backgroundLabel.remove(cell.getEnemy());
                         cells.remove(j);
                     }
