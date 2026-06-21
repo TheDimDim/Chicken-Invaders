@@ -193,7 +193,7 @@ public class GamePanel extends JPanel implements KeyListener {
 
                 if (bullet.hitEnemy(cell.getEnemy())) {
 
-                    SoundManager.playSound("C:\\Users\\Asus\\Downloads\\sound-effects-20260621T162013Z-3-001\\sound-effects\\mixkit-epic-impact-afar-explosion-2782.wav");
+                    SoundManager.playSoundWithVolume("C:\\Users\\Asus\\Downloads\\sound-effects-20260621T162013Z-3-001\\sound-effects\\mixkit-epic-impact-afar-explosion-2782.wav", -12.0f);
                     cell.hit();
                     backgroundLabel.remove(bullet);
                     bullets.remove(i--);
@@ -371,24 +371,30 @@ public class GamePanel extends JPanel implements KeyListener {
     }
 
     //----------------------------------------------------------------
+
     //Lose life
     public void loseLife() {
 
         if (lives > 0) {
 
-            SoundManager.playSound("C:\\Users\\Asus\\Downloads\\sound-effects-20260621T162013Z-3-001\\sound-effects\\mixkit-epic-impact-afar-explosion-2782.wav");
-
             lives--;
             livesLabel.setText("Lives: " + lives);
 
             if (lives == 0) {
-                SoundManager.playSound("C:\\Users\\Asus\\Downloads\\sound-effects-20260621T162013Z-3-001\\sound-effects\\mixkit-retro-arcade-game-over-470.wav");
+                SoundManager.playSoundWithVolume("C:\\Users\\Asus\\Downloads\\sound-effects-20260621T162013Z-3-001\\sound-effects\\mixkit-retro-arcade-game-over-470.wav", 6.0f);
+
 
                 gameOver = true;
                 gameOverLabel.setVisible(true);
             }
+
+            else {
+                SoundManager.playSoundWithVolume("C:\\Users\\Asus\\Downloads\\sound-effects-20260621T162013Z-3-001\\sound-effects\\mixkit-epic-impact-afar-explosion-2782.wav", -12.0f);
+
+            }
         }
     }
+
 
     //----------------------------------------------------------------
     //KEYBOARD
@@ -397,16 +403,16 @@ public class GamePanel extends JPanel implements KeyListener {
 
         if (!paused && !gameOver) {
 
-            if (e.getKeyCode() == KeyEvent.VK_RIGHT)
+            if (e.getKeyCode() == KeyEvent.VK_RIGHT || e.getKeyCode() == KeyEvent.VK_D)
                 plane.moveRight();
 
-            if (e.getKeyCode() == KeyEvent.VK_LEFT)
+            if (e.getKeyCode() == KeyEvent.VK_LEFT || e.getKeyCode() == KeyEvent.VK_A)
                 plane.moveLeft();
 
-            if (e.getKeyCode() == KeyEvent.VK_UP)
+            if (e.getKeyCode() == KeyEvent.VK_UP || e.getKeyCode() == KeyEvent.VK_W)
                 plane.moveUp();
 
-            if (e.getKeyCode() == KeyEvent.VK_DOWN)
+            if (e.getKeyCode() == KeyEvent.VK_DOWN || e.getKeyCode() == KeyEvent.VK_S)
                 plane.moveDown();
 
             if (e.getKeyCode() == KeyEvent.VK_SPACE) {
@@ -414,13 +420,15 @@ public class GamePanel extends JPanel implements KeyListener {
                 long now = System.currentTimeMillis();
 
                 if (now - lastBulletShotTime >= 300) {
+
                     Bullet bullet = new Bullet(plane.getXPosition() + 28, plane.getYPosition());
 
                     bullets.add(bullet);
                     backgroundLabel.add(bullet);
-                    SoundManager.playSound("C:\\Users\\Asus\\Downloads\\sound-effects-20260621T162013Z-3-001\\sound-effects\\mixkit-short-laser-gun-shot-1670.wav");
-                    lastBulletShotTime = now;
 
+                    SoundManager.playSound("C:\\Users\\Asus\\Downloads\\sound-effects-20260621T162013Z-3-001\\sound-effects\\mixkit-short-laser-gun-shot-1670.wav");
+
+                    lastBulletShotTime = now;
                 }
             }
         }
@@ -434,7 +442,6 @@ public class GamePanel extends JPanel implements KeyListener {
             gameMain.showMainMenu();
         }
     }
-
     @Override public void keyReleased(KeyEvent e) {}
     @Override public void keyTyped(KeyEvent e) {}
 }

@@ -29,24 +29,37 @@ public class Plane extends JLabel {
 
     //Methods
     public void moveRight() {
-        x += speed;
-        setBounds(x, y, 90, 90);
+
+        if (x < 710) {
+            x += speed;
+            setBounds(x, y, 90, 90);
+        }
     }
 
     public void moveLeft() {
-        x -= speed;
-        setBounds(x, y, 90, 90);
+
+        if (x > 0) {
+            x -= speed;
+            setBounds(x, y, 90, 90);
+        }
     }
 
     public void moveUp() {
-        y -= speed;
-        setBounds(x, y, 90, 90);
+
+        if (y > 0) {
+            y -= speed;
+            setBounds(x, y, 90, 90);
+        }
     }
 
     public void moveDown() {
-        y += speed;
-        setBounds(x, y, 90, 90);
+
+        if (y < 510) {
+            y += speed;
+            setBounds(x, y, 90, 90);
+        }
     }
+
 
     public int getXPosition() {
         return x;

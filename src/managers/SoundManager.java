@@ -21,4 +21,25 @@ public class SoundManager {
             System.out.println("Sound error: " + e.getMessage());
         }
     }
+
+    public static void playSoundWithVolume(String path, float volume) {
+
+        try {
+
+            File soundFile = new File(path);
+            AudioInputStream audioInputStream = AudioSystem.getAudioInputStream(soundFile);
+
+            Clip clip = AudioSystem.getClip();
+            clip.open(audioInputStream);
+
+            FloatControl gainControl = (FloatControl) clip.getControl(FloatControl.Type.MASTER_GAIN);
+            gainControl.setValue(volume);
+
+            clip.start();
+
+        } catch (Exception e) {
+
+            System.out.println("Sound error: " + e.getMessage());
+        }
+    }
 }
