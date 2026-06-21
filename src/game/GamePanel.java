@@ -1,5 +1,6 @@
 package game;
 
+import managers.SoundManager;
 import model.Bullet;
 import model.Egg;
 import model.Plane;
@@ -136,7 +137,7 @@ public class GamePanel extends JPanel implements KeyListener {
                 dropEgg();
                 moveEggs();
                 moveEnemyBullets();
-                shooterLogic();
+                shooterEnemiesShoot();
             }
         });
 
@@ -191,6 +192,8 @@ public class GamePanel extends JPanel implements KeyListener {
                 Cell cell = cells.get(j);
 
                 if (bullet.hitEnemy(cell.getEnemy())) {
+
+                    SoundManager.playSound("C:\\Users\\Asus\\Downloads\\sound-effects-20260621T162013Z-3-001\\sound-effects\\mixkit-epic-impact-afar-explosion-2782.wav");
                     cell.hit();
                     backgroundLabel.remove(bullet);
                     bullets.remove(i--);
@@ -266,7 +269,7 @@ public class GamePanel extends JPanel implements KeyListener {
 
     //----------------------------------------------------------------
     //Shooter enemy
-    public void shooterEnemiesShoot()() {
+    public void shooterEnemiesShoot() {
 
         for (int i = 0; i < cells.size(); i++) {
 
@@ -288,7 +291,7 @@ public class GamePanel extends JPanel implements KeyListener {
 
     //----------------------------------------------------------------
 
-    //ENEMY BULLETS
+    //Enemy bullets
     public void moveEnemyBullets() {
 
         for (int i = 0; i < enemyBullets.size(); i++) {
@@ -370,10 +373,13 @@ public class GamePanel extends JPanel implements KeyListener {
 
         if (lives > 0) {
 
+            SoundManager.playSound("C:\\Users\\Asus\\Downloads\\sound-effects-20260621T162013Z-3-001\\sound-effects\\mixkit-epic-impact-afar-explosion-2782.wav");
+
             lives--;
             livesLabel.setText("Lives: " + lives);
 
             if (lives == 0) {
+                SoundManager.playSound("C:\\Users\\Asus\\Downloads\\sound-effects-20260621T162013Z-3-001\\sound-effects\\mixkit-retro-arcade-game-over-470.wav");
 
                 gameOver = true;
                 gameOverLabel.setVisible(true);
@@ -405,13 +411,13 @@ public class GamePanel extends JPanel implements KeyListener {
                 long now = System.currentTimeMillis();
 
                 if (now - lastBulletShotTime >= 300) {
-
                     Bullet bullet = new Bullet(plane.getXPosition() + 28, plane.getYPosition());
 
                     bullets.add(bullet);
                     backgroundLabel.add(bullet);
-
+                    SoundManager.playSound("C:\\Users\\Asus\\Downloads\\sound-effects-20260621T162013Z-3-001\\sound-effects\\mixkit-short-laser-gun-shot-1670.wav");
                     lastBulletShotTime = now;
+
                 }
             }
         }
