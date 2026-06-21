@@ -12,11 +12,13 @@ public class Bullet extends JLabel {
     private int y;
     private int speed;
 
+    //----------------------------------------------------------------
+
     //Constructor
     public Bullet(int x, int y) {
         this.x = x;
         this.y = y;
-        this.speed = 15;
+        this.speed = 30;
 
         ImageIcon bulletIcon = new ImageIcon("C:/Users/Asus/Downloads/airplan-20260613T102345Z-3-001/airplan/shot.png");
         Image bulletImage = bulletIcon.getImage().getScaledInstance(20, 50, Image.SCALE_SMOOTH);
@@ -25,10 +27,21 @@ public class Bullet extends JLabel {
         setBounds(this.x, this.y, 20, 50);
     }
 
+    //----------------------------------------------------------------
+
     //Methods
     public void movement() {
         y -= speed;
         setBounds(x, y, 20, 50);
+    }
+
+    public void enemyMovement() {
+        y += 6;
+        setBounds(x, y, 20, 50);
+    }
+
+    public boolean hitPlane(Plane plane) {
+        return getBounds().intersects(plane.getBounds());
     }
     
 

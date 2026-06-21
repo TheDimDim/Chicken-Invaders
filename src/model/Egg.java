@@ -5,10 +5,14 @@ import java.awt.*;
 
 public class Egg extends JLabel {
 
+    //Fields
     private int x;
     private int y;
     private int speed;
 
+    //----------------------------------------------------------------
+
+    //Constructor
     public Egg(int x, int y) {
         this.x = x;
         this.y = y;
@@ -20,6 +24,10 @@ public class Egg extends JLabel {
         setIcon(new ImageIcon(eggImage));
         setBounds(this.x, this.y, 40, 50);
     }
+
+    //----------------------------------------------------------------
+
+    //Methods
 
     public void movement() {
         y += speed;

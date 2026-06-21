@@ -12,6 +12,7 @@ public class MainMenu extends JPanel {
     private GameMain gameMain;
 
     public MainMenu(GameMain gameMain) {
+
         this.gameMain = gameMain;
         setLayout(null);
 
@@ -29,6 +30,8 @@ public class MainMenu extends JPanel {
         titleLabel.setFont(new Font("Arial", Font.BOLD, 42));
         backgroundLabel.add(titleLabel);
 
+        //----------------------------------------------------------------
+        //New game button
         JButton newGameButton = new JButton("New Game");
         newGameButton.setBounds(300, 160, 200, 40);
         backgroundLabel.add(newGameButton);
@@ -40,14 +43,17 @@ public class MainMenu extends JPanel {
             }
         });
 
+        //----------------------------------------------------------------
+
         JButton highScoresButton = new JButton("High Scores");
         highScoresButton.setBounds(300, 220, 200, 40);
         backgroundLabel.add(highScoresButton);
+        //----------------------------------------------------------------
 
         JButton settingsButton = new JButton("Settings");
         settingsButton.setBounds(300, 280, 200, 40);
         backgroundLabel.add(settingsButton);
-
+        //----------------------------------------------------------------
         //How to play button
         JButton howToPlayButton = new JButton("How to Play");
         howToPlayButton.setBounds(300, 340, 200, 40);
@@ -69,6 +75,7 @@ public class MainMenu extends JPanel {
             }
         });
 
+        //----------------------------------------------------------------
         //Exit button
         JButton exitButton = new JButton("Exit");
         exitButton.setBounds(300, 400, 200, 40);

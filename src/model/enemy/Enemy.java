@@ -11,7 +11,7 @@ public class Enemy extends JLabel {
     protected int health;
     protected int score;
 
-
+    //----------------------------------------------------------------
 
     //Constructor
     public Enemy(int x, float y, int health ,int score) {
@@ -20,6 +20,9 @@ public class Enemy extends JLabel {
         this.health = health;
         this.score = score;
     }
+
+    //----------------------------------------------------------------
+
     //Methods
     public void damage() {
         health--;
