@@ -14,4 +14,9 @@ public class FastEnemy extends Enemy {
         setIcon(new ImageIcon(enemyImage));
         setBounds(x, y, 70, 70);
     }
+
+    @Override
+    public void moveHorizontal(int direction) {
+        super.moveHorizontal(direction*2);
+    }
 }

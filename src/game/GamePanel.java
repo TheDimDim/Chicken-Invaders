@@ -242,6 +242,11 @@ public class GamePanel extends JPanel implements KeyListener {
 
                 loseLife();
             }
+            else if (enemy.isOutOfScreen()){
+                backgroundLabel.remove(enemy);
+                cells.remove(i--);
+                loseLife();
+            }
         }
 
         if (hitEdge) {
@@ -260,10 +265,20 @@ public class GamePanel extends JPanel implements KeyListener {
 
             plane.resetPosition();
 
+            for (int i = 0; i < bullets.size(); i++) {
+                backgroundLabel.remove(bullets.get(i));
+            }
             bullets.clear();
-            backgroundLabel.removeAll();
 
-            backgroundLabel.add(plane);
+            for (int i = 0; i < eggs.size(); i++) {
+                backgroundLabel.remove(eggs.get(i));
+            }
+            eggs.clear();
+
+            for (int i = 0; i < enemyBullets.size(); i++) {
+                backgroundLabel.remove(enemyBullets.get(i));
+            }
+            enemyBullets.clear();
 
             grid();
         }
