@@ -192,6 +192,8 @@ public class GamePanel extends JPanel implements KeyListener {
                 Cell cell = cells.get(j);
 
                 if (bullet.hitEnemy(cell.getEnemy())) {
+
+                    SoundManager.playSound("C:\\Users\\Asus\\Downloads\\sound-effects-20260621T162013Z-3-001\\sound-effects\\mixkit-epic-impact-afar-explosion-2782.wav");
                     cell.hit();
                     backgroundLabel.remove(bullet);
                     bullets.remove(i--);
@@ -371,10 +373,13 @@ public class GamePanel extends JPanel implements KeyListener {
 
         if (lives > 0) {
 
+            SoundManager.playSound("C:\\Users\\Asus\\Downloads\\sound-effects-20260621T162013Z-3-001\\sound-effects\\mixkit-epic-impact-afar-explosion-2782.wav");
+
             lives--;
             livesLabel.setText("Lives: " + lives);
 
             if (lives == 0) {
+                SoundManager.playSound("C:\\Users\\Asus\\Downloads\\sound-effects-20260621T162013Z-3-001\\sound-effects\\mixkit-retro-arcade-game-over-470.wav");
 
                 gameOver = true;
                 gameOverLabel.setVisible(true);
