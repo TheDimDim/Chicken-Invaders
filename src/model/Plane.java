@@ -10,6 +10,8 @@ public class Plane extends JLabel {
     private int y;
     private int speed;
 
+    //----------------------------------------------------------------
+
     //Constructor
     public Plane() {
         x = 355;
@@ -23,8 +25,9 @@ public class Plane extends JLabel {
         setBounds(x, y, 90, 90);
     }
 
+    //----------------------------------------------------------------
 
-    //Movements
+    //Methods
     public void moveRight() {
         x += speed;
         setBounds(x, y, 90, 90);
@@ -45,12 +48,17 @@ public class Plane extends JLabel {
         setBounds(x, y, 90, 90);
     }
 
-    //Methods
     public int getXPosition() {
         return x;
     }
 
     public int getYPosition() {
         return y;
+    }
+
+    public void resetPosition() {
+        x = 355;
+        y = 460;
+        setBounds(x, y, 90, 90);
     }
 }

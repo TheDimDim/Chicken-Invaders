@@ -1,8 +1,10 @@
 package game;
 
 import model.Bullet;
+import model.Egg;
 import model.Plane;
 import model.enemy.*;
+import model.enemy.Cell;
 
 import javax.swing.*;
 import java.awt.*;
@@ -11,19 +13,33 @@ import java.awt.event.*;
 public class GamePanel extends JPanel implements KeyListener {
 
     //Fields
-    private java.util.ArrayList<Enemy> enemies;
     private GameMain gameMain;
     private Plane plane;
     private JLabel backgroundLabel;
-    private java.util.ArrayList<Bullet> bullets;
     private Timer timer;
+
+    //BULLET
     private long lastBulletShotTime;
+    private java.util.ArrayList<Bullet> bullets;
+
+    //ENEMY
+    private java.util.ArrayList<Cell> cells;
+    private java.util.ArrayList<Bullet> enemyBullets;
+    private int enemyDirection;
+    private int enemySpeed;
+
+    //EGG
+    private java.util.ArrayList<Egg> eggs;
+    private long lastEggDropTime;
 
     private int score;
     private JLabel scoreLabel;
 
     private int lives;
     private JLabel livesLabel;
+
+    private int stage;
+    private JLabel stageLabel;
 
     private boolean paused;
     private JLabel pauseLabel;
@@ -34,12 +50,23 @@ public class GamePanel extends JPanel implements KeyListener {
     private int rows = 5;
     private int cols = 8;
 
+
+    //----------------------------------------------------------------
+
     //Constructor
     public GamePanel(GameMain gameMain) {
 
         this.gameMain = gameMain;
         setLayout(null);
+
         lastBulletShotTime = 0;
+        lastEggDropTime = 0;
+        stage = 1;
+        enemyDirection = 1;
+        enemySpeed = 1;
+
+        eggs = new java.util.ArrayList<>();
+        enemyBullets = new java.util.ArrayList<>();
 
         ImageIcon background = new ImageIcon("C:\\Users\\Asus\\Downloads\\background.jpg");
         Image backgroundImage = background.getImage().getScaledInstance(800, 600, Image.SCALE_SMOOTH);
@@ -53,23 +80,30 @@ public class GamePanel extends JPanel implements KeyListener {
         backgroundLabel.add(plane);
 
         bullets = new java.util.ArrayList<>();
-        enemies = new java.util.ArrayList<>();
+        cells = new java.util.ArrayList<>();
 
-        grid(); // 🔥 فقط اینو داریم
+        grid();
 
         //Score
         score = 0;
-        scoreLabel = new JLabel("Score: " + score);
+        scoreLabel = new JLabel("Score: 0");
         scoreLabel.setForeground(Color.WHITE);
         scoreLabel.setBounds(50, 50, 200, 40);
         backgroundLabel.add(scoreLabel);
 
         //Lives
         lives = 3;
-        livesLabel = new JLabel("Lives: " + lives);
+        livesLabel = new JLabel("Lives: 3");
         livesLabel.setForeground(Color.WHITE);
         livesLabel.setBounds(50, 0, 200, 40);
         backgroundLabel.add(livesLabel);
+
+        //Stage
+        stage = 1;
+        stageLabel = new JLabel("Stage: 1");
+        stageLabel.setForeground(Color.WHITE);
+        stageLabel.setBounds(650, 0, 120, 40);
+        backgroundLabel.add(stageLabel);
 
         //Pause
         paused = false;
@@ -89,60 +123,63 @@ public class GamePanel extends JPanel implements KeyListener {
         gameOverLabel.setVisible(false);
         backgroundLabel.add(gameOverLabel);
 
-        //Back button
-        JButton backButton = new JButton("Back to Menu");
-        backButton.setBounds(200, 0, 200, 40);
-        backgroundLabel.add(backButton);
-
-        backButton.addActionListener(e -> gameMain.showMainMenu());
-
         setFocusable(true);
         addKeyListener(this);
 
-        timer = new Timer(16, new ActionListener() {
-            @Override
-            public void actionPerformed(ActionEvent e) {
-                if (!paused && !gameOver) {
-                    moveBullets();
-                    moveEnemies();
-                }
+        //Timer
+        timer = new Timer(16, e -> {
+
+            if (!paused && !gameOver) {
+
+                moveBullets();
+                moveEnemies();
+                dropEgg();
+                moveEggs();
+                moveEnemyBullets();
+                shooterLogic();
             }
         });
 
         timer.start();
     }
+    //----------------------------------------------------------------
+    //Methods
 
-    //GRID SYSTEM
+    //GRID
     public void grid() {
 
-        enemies.clear();
+        cells.clear();
 
         for (int i = 0; i < rows; i++) {
-
             for (int j = 0; j < cols; j++) {
-
-                Enemy enemy;
 
                 int x = 100 + j * 70;
                 int y = 50 + i * 60;
-
-                if (i == 0) {
-                    enemy = new ShooterEnemy(x, y);
-                } else if (i == 1 || i == 2) {
-                    enemy = new FastEnemy(x, y);
-                } else if (i == 3) {
-                    enemy = new ZigzagEnemy(x, y);
-                } else {
+                Enemy enemy;
+                if (stage == 1)
                     enemy = new NormalEnemy(x, y);
-                }
+                else if (stage == 2)
+                    enemy = (i % 2 == 0) ? new NormalEnemy(x, y) : new FastEnemy(x, y);
+                else
+                    enemy = (i % 2 == 0) ? new ZigzagEnemy(x, y) : new ShooterEnemy(x, y);
+                int hitCount;
+                if (enemy instanceof FastEnemy)
+                    hitCount = 1;
+                else if (stage <= 3)
+                    hitCount = 2;
+                else
+                    hitCount = 3;
 
-                enemies.add(enemy);
+                Cell cell = new Cell(enemy, hitCount);
+
+                cells.add(cell);
                 backgroundLabel.add(enemy);
             }
         }
     }
 
-    //Bullets
+    //----------------------------------------------------------------
+    //BULLETS
     public void moveBullets() {
 
         for (int i = 0; i < bullets.size(); i++) {
@@ -150,69 +187,184 @@ public class GamePanel extends JPanel implements KeyListener {
             Bullet bullet = bullets.get(i);
             bullet.movement();
 
-            for (int j = 0; j < enemies.size(); j++) {
+            for (int j = 0; j < cells.size(); j++) {
+                Cell cell = cells.get(j);
 
-                Enemy enemy = enemies.get(j);
-
-                if (bullet.hitEnemy(enemy)) {
-
+                if (bullet.hitEnemy(cell.getEnemy())) {
+                    cell.hit();
                     backgroundLabel.remove(bullet);
-                    bullets.remove(i);
-                    i--;
+                    bullets.remove(i--);
 
-                    enemy.damage();
-
-                    if (enemy.isDead()) {
-
-                        backgroundLabel.remove(enemy);
-                        enemies.remove(j);
+                    if (cell.isDestroyed()) {
+                        backgroundLabel.remove(cell.getEnemy());
+                        cells.remove(j);
                     }
-
                     break;
                 }
             }
 
             if (i >= 0 && i < bullets.size() && bullet.getY() < 0) {
-
                 backgroundLabel.remove(bullet);
-                bullets.remove(i);
-                i--;
+                bullets.remove(i--);
             }
         }
 
         backgroundLabel.repaint();
     }
 
-    //Enemies
+    //----------------------------------------------------------------
+
+    //ENEMIES
     public void moveEnemies() {
 
-        for (int i = 0; i < enemies.size(); i++) {
+        boolean hitEdge = false;
 
-            Enemy enemy = enemies.get(i);
+        for (int i = 0; i < cells.size(); i++) {
 
-            enemy.moveDown();
+            Cell cell = cells.get(i);
+            Enemy enemy = cell.getEnemy();
+
+            enemy.moveHorizontal(enemyDirection * enemySpeed);
+
+            if (enemy.hitEdge())
+                hitEdge = true;
 
             if (enemy.hitPlane(plane)) {
 
                 backgroundLabel.remove(enemy);
-                enemies.remove(i);
-                i--;
+                cells.remove(i--);
 
                 loseLife();
+            }
+        }
 
-            } else if (enemy.isOutOfScreen()) {
+        if (hitEdge) {
 
-                backgroundLabel.remove(enemy);
-                enemies.remove(i);
-                i--;
+            enemyDirection *= -1;
+
+            for (Cell cell : cells)
+                cell.getEnemy().moveVertical(15);
+        }
+
+        if (cells.isEmpty()) {
+
+            stage++;
+            enemySpeed = stage;
+            stageLabel.setText("Stage: " + stage);
+
+            plane.resetPosition();
+
+            bullets.clear();
+            backgroundLabel.removeAll();
+
+            backgroundLabel.add(plane);
+
+            grid();
+        }
+        backgroundLabel.repaint();
+    }
+
+    //----------------------------------------------------------------
+    //Shooter enemy
+    public void shooterEnemiesShoot()() {
+
+        for (int i = 0; i < cells.size(); i++) {
+
+            Cell cell = cells.get(i);
+            Enemy enemy = cell.getEnemy();
+
+            if (enemy instanceof ShooterEnemy) {
+
+                Bullet b = ((ShooterEnemy) enemy).shoot();
+
+                if (b != null) {
+
+                    enemyBullets.add(b);
+                    backgroundLabel.add(b);
+                }
+            }
+        }
+    }
+
+    //----------------------------------------------------------------
+
+    //ENEMY BULLETS
+    public void moveEnemyBullets() {
+
+        for (int i = 0; i < enemyBullets.size(); i++) {
+
+            Bullet b = enemyBullets.get(i);
+
+            b.enemyMovement();
+
+            if (b.hitPlane(plane)) {
+
+                backgroundLabel.remove(b);
+                enemyBullets.remove(i--);
 
                 loseLife();
+            }
+
+            else if (b.getY() > 600) {
+
+                backgroundLabel.remove(b);
+                enemyBullets.remove(i--);
             }
         }
 
         backgroundLabel.repaint();
     }
 
+    //----------------------------------------------------------------
+    //Drop Egg
+    public void dropEgg() {
+
+        long currentTime = System.currentTimeMillis();
+
+        if (currentTime - lastEggDropTime >= 3000 && cells.size() > 0) {
+
+            int randomIndex = (int)(Math.random() * cells.size());
+
+            Cell cell = cells.get(randomIndex);
+            Enemy enemy = cell.getEnemy();
+
+            Egg egg = new Egg(enemy.getXPosition() + 15, enemy.getYPosition() + 50);
+
+            eggs.add(egg);
+            backgroundLabel.add(egg);
+
+            lastEggDropTime = currentTime;
+        }
+    }
+
+    //----------------------------------------------------------------
+    //Eggs Movement
+    public void moveEggs() {
+
+        for (int i = 0; i < eggs.size(); i++) {
+
+            Egg egg = eggs.get(i);
+            egg.movement();
+
+            if (egg.hitPlane(plane)) {
+
+                backgroundLabel.remove(egg);
+                eggs.remove(i--);
+
+                loseLife();
+            }
+
+            else if (egg.getY() > 600) {
+
+                backgroundLabel.remove(egg);
+                eggs.remove(i--);
+            }
+        }
+
+        backgroundLabel.repaint();
+    }
+
+    //----------------------------------------------------------------
     //Lose life
     public void loseLife() {
 
@@ -229,22 +381,23 @@ public class GamePanel extends JPanel implements KeyListener {
         }
     }
 
-    //Keyboard
+    //----------------------------------------------------------------
+    //KEYBOARD
     @Override
     public void keyPressed(KeyEvent e) {
 
         if (!paused && !gameOver) {
 
-            if (e.getKeyCode() == KeyEvent.VK_RIGHT || e.getKeyCode() == KeyEvent.VK_D)
+            if (e.getKeyCode() == KeyEvent.VK_RIGHT)
                 plane.moveRight();
 
-            if (e.getKeyCode() == KeyEvent.VK_LEFT || e.getKeyCode() == KeyEvent.VK_A)
+            if (e.getKeyCode() == KeyEvent.VK_LEFT)
                 plane.moveLeft();
 
-            if (e.getKeyCode() == KeyEvent.VK_UP || e.getKeyCode() == KeyEvent.VK_W)
+            if (e.getKeyCode() == KeyEvent.VK_UP)
                 plane.moveUp();
 
-            if (e.getKeyCode() == KeyEvent.VK_DOWN || e.getKeyCode() == KeyEvent.VK_S)
+            if (e.getKeyCode() == KeyEvent.VK_DOWN)
                 plane.moveDown();
 
             if (e.getKeyCode() == KeyEvent.VK_SPACE) {
@@ -254,6 +407,7 @@ public class GamePanel extends JPanel implements KeyListener {
                 if (now - lastBulletShotTime >= 300) {
 
                     Bullet bullet = new Bullet(plane.getXPosition() + 28, plane.getYPosition());
+
                     bullets.add(bullet);
                     backgroundLabel.add(bullet);
 
@@ -262,7 +416,7 @@ public class GamePanel extends JPanel implements KeyListener {
             }
         }
 
-        if (e.getKeyCode() == KeyEvent.VK_P && !gameOver) {
+        if (e.getKeyCode() == KeyEvent.VK_P) {
             paused = !paused;
             pauseLabel.setVisible(paused);
         }
@@ -272,9 +426,6 @@ public class GamePanel extends JPanel implements KeyListener {
         }
     }
 
-    @Override
-    public void keyReleased(KeyEvent e) {}
-
-    @Override
-    public void keyTyped(KeyEvent e) {}
+    @Override public void keyReleased(KeyEvent e) {}
+    @Override public void keyTyped(KeyEvent e) {}
 }
