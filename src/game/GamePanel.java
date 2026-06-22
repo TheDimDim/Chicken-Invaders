@@ -54,8 +54,8 @@ public class GamePanel extends JPanel implements KeyListener {
     private boolean gameOver;
     private JLabel gameOverLabel;
 
-    private int rows = 2;
-    private int cols = 2;
+    private int rows = 5;
+    private int cols = 8;
 
     //----------------------------------------------------------------
 
@@ -140,6 +140,7 @@ public class GamePanel extends JPanel implements KeyListener {
                 moveEnemies();
                 moveBoss();
 
+
                 dropEgg();
                 moveEggs();
                 moveEnemyBullets();
@@ -153,13 +154,13 @@ public class GamePanel extends JPanel implements KeyListener {
     //----------------------------------------------------------------
     //GRID
     public void grid() {
-        for ( Cell cell : cells){
+        for (Cell cell : cells) {
             backgroundLabel.remove(cell.getEnemy());
         }
-
         cells.clear();
 
         if (stage == 4) {
+            backgroundLabel.revalidate();
             backgroundLabel.repaint();
             return;
         }
@@ -196,6 +197,7 @@ public class GamePanel extends JPanel implements KeyListener {
     }
 
 
+
     //----------------------------------------------------------------
     //BULLETS
     public void moveBullets() {
@@ -224,6 +226,7 @@ public class GamePanel extends JPanel implements KeyListener {
             if (boss != null && bullet.hitEnemy(boss)) {
 
                 boss.damageBoss();
+                SoundManager.playSoundWithVolume("C:\\Users\\Asus\\Downloads\\sound-effects-20260621T162013Z-3-001\\sound-effects\\mixkit-epic-impact-afar-explosion-2782.wav", -12.0f);
 
                 backgroundLabel.remove(bullet);
                 bullets.remove(i--);
@@ -250,9 +253,7 @@ public class GamePanel extends JPanel implements KeyListener {
                 if (bullet.hitEnemy(cell.getEnemy())) {
 
                     SoundManager.playSoundWithVolume(
-                            "C:\\Users\\Asus\\Downloads\\sound-effects-20260621T162013Z-3-001\\sound-effects\\mixkit-epic-impact-afar-explosion-2782.wav",
-                            -12.0f
-                    );
+                            "C:\\Users\\Asus\\Downloads\\sound-effects-20260621T162013Z-3-001\\sound-effects\\mixkit-epic-impact-afar-explosion-2782.wav", -12.0f);
 
                     cell.hit();
 
@@ -341,7 +342,6 @@ public class GamePanel extends JPanel implements KeyListener {
             }
         }
     }
-
     private void enemiesStage() {
 
         boolean hitEdge = false;
@@ -354,7 +354,6 @@ public class GamePanel extends JPanel implements KeyListener {
         if (hitEdge) {
 
             enemyDirection *= -1;
-
             for (Cell cell : cells)
                 cell.getEnemy().moveVertical(15);
         }
@@ -370,12 +369,23 @@ public class GamePanel extends JPanel implements KeyListener {
 
         if ((allDead || cells.isEmpty()) && boss == null) {
 
+
             stage++;
             enemySpeed = stage;
 
             stageLabel.setText("Stage: " + stage);
 
             plane.resetPosition();
+
+            for (Egg egg : eggs) {
+                backgroundLabel.remove(egg);
+            }
+            for (Bullet enemyBullet : enemyBullets) {
+                backgroundLabel.remove(enemyBullet);
+            }
+            for (Bullet b : bullets) {
+                backgroundLabel.remove(b);
+            }
 
             bullets.clear();
             eggs.clear();
@@ -386,12 +396,14 @@ public class GamePanel extends JPanel implements KeyListener {
             grid();
 
             if (stage == 4 ) {
-
                 boss = new BossLevel4(300, 50, 20, 500);
                 backgroundLabel.add(boss);
             }
+            backgroundLabel.revalidate();
+            backgroundLabel.repaint();
         }
     }
+
     //----------------------------------------------------------------
     //BOSS
     private void moveBoss() {
