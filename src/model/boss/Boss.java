@@ -20,7 +20,7 @@ public abstract class Boss extends Enemy {
         if (x <= 0 || x >= 640)
             direction *= -1;
 
-        setBounds(x, (int)y, 160, 160);
+        setBounds(x, (int)y, 250, 250);
     }
 
     //DAMAGE
