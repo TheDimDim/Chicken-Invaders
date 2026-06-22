@@ -5,6 +5,7 @@ import model.Bullet;
 import model.Egg;
 import model.Plane;
 import model.boss.Boss;
+import model.boss.BossLevel4;
 import model.enemy.*;
 import model.enemy.Cell;
 
@@ -53,8 +54,8 @@ public class GamePanel extends JPanel implements KeyListener {
     private boolean gameOver;
     private JLabel gameOverLabel;
 
-    private int rows = 1;
-    private int cols = 1;
+    private int rows = 2;
+    private int cols = 2;
 
     //----------------------------------------------------------------
 
@@ -152,12 +153,19 @@ public class GamePanel extends JPanel implements KeyListener {
     //----------------------------------------------------------------
     //GRID
     public void grid() {
+        for ( Cell cell : cells){
+            backgroundLabel.remove(cell.getEnemy());
+        }
 
         cells.clear();
 
+        if (stage == 4) {
+            backgroundLabel.repaint();
+            return;
+        }
+
         for (int i = 0; i < rows; i++) {
             for (int j = 0; j < cols; j++) {
-
                 int x = 100 + j * 70;
                 int y = 50 + i * 60;
 
@@ -186,6 +194,7 @@ public class GamePanel extends JPanel implements KeyListener {
             }
         }
     }
+
 
     //----------------------------------------------------------------
     //BULLETS
@@ -226,6 +235,8 @@ public class GamePanel extends JPanel implements KeyListener {
 
                     backgroundLabel.remove(boss);
                     boss = null;
+                    stage ++;
+                    stageLabel.setText("Stage: " + stage);
                 }
 
                 return;
@@ -275,14 +286,27 @@ public class GamePanel extends JPanel implements KeyListener {
     }
 
     //----------------------------------------------------------------
-    //ENEMIES
+    //ENEMY
     public void moveEnemies() {
 
+        enemiesCleanup();
         enemiesMovement();
         enemiesCollision();
         enemiesStage();
 
         backgroundLabel.repaint();
+    }
+
+    private void enemiesCleanup() {
+
+        for (int i = 0; i < cells.size(); i++) {
+
+            if (cells.get(i).getEnemy().isDead()) {
+
+                backgroundLabel.remove(cells.get(i).getEnemy());
+                cells.remove(i--);
+            }
+        }
     }
 
     private void enemiesMovement() {
@@ -335,7 +359,16 @@ public class GamePanel extends JPanel implements KeyListener {
                 cell.getEnemy().moveVertical(15);
         }
 
-        if (cells.isEmpty()) {
+        boolean allDead = true;
+
+        for (int i = 0; i < cells.size(); i++) {
+
+            if (!cells.get(i).getEnemy().isDead()) {
+                allDead = false;
+            }
+        }
+
+        if ((allDead || cells.isEmpty()) && boss == null) {
 
             stage++;
             enemySpeed = stage;
@@ -351,9 +384,14 @@ public class GamePanel extends JPanel implements KeyListener {
             boss = null;
 
             grid();
+
+            if (stage == 4 ) {
+
+                boss = new BossLevel4(300, 50, 20, 500);
+                backgroundLabel.add(boss);
+            }
         }
     }
-
     //----------------------------------------------------------------
     //BOSS
     private void moveBoss() {
