@@ -3,7 +3,7 @@ import model.Plane;
 
 import javax.swing.*;
 
-public class Enemy extends JLabel {
+public abstract class Enemy extends JLabel {
 
     //Fields
     protected int x;

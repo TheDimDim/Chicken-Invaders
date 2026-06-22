@@ -4,12 +4,14 @@ import managers.SoundManager;
 import model.Bullet;
 import model.Egg;
 import model.Plane;
+import model.boss.Boss;
 import model.enemy.*;
 import model.enemy.Cell;
 
 import javax.swing.*;
 import java.awt.*;
 import java.awt.event.*;
+import java.util.ArrayList;
 
 public class GamePanel extends JPanel implements KeyListener {
 
@@ -21,16 +23,19 @@ public class GamePanel extends JPanel implements KeyListener {
 
     //BULLET
     private long lastBulletShotTime;
-    private java.util.ArrayList<Bullet> bullets;
+    private ArrayList<Bullet> bullets;
 
     //ENEMY
-    private java.util.ArrayList<Cell> cells;
-    private java.util.ArrayList<Bullet> enemyBullets;
+    private ArrayList<Cell> cells;
+    private ArrayList<Bullet> enemyBullets;
     private int enemyDirection;
     private int enemySpeed;
 
+    //BOSS
+    private Boss boss;
+
     //EGG
-    private java.util.ArrayList<Egg> eggs;
+    private ArrayList<Egg> eggs;
     private long lastEggDropTime;
 
     private int score;
@@ -48,9 +53,8 @@ public class GamePanel extends JPanel implements KeyListener {
     private boolean gameOver;
     private JLabel gameOverLabel;
 
-    private int rows = 3;
-    private int cols = 3;
-
+    private int rows = 1;
+    private int cols = 1;
 
     //----------------------------------------------------------------
 
@@ -62,12 +66,15 @@ public class GamePanel extends JPanel implements KeyListener {
 
         lastBulletShotTime = 0;
         lastEggDropTime = 0;
+
         stage = 1;
         enemyDirection = 1;
         enemySpeed = 1;
 
-        eggs = new java.util.ArrayList<>();
-        enemyBullets = new java.util.ArrayList<>();
+        eggs = new ArrayList<>();
+        enemyBullets = new ArrayList<>();
+        bullets = new ArrayList<>();
+        cells = new ArrayList<>();
 
         ImageIcon background = new ImageIcon("C:\\Users\\Asus\\Downloads\\background.jpg");
         Image backgroundImage = background.getImage().getScaledInstance(800, 600, Image.SCALE_SMOOTH);
@@ -79,9 +86,6 @@ public class GamePanel extends JPanel implements KeyListener {
 
         plane = new Plane();
         backgroundLabel.add(plane);
-
-        bullets = new java.util.ArrayList<>();
-        cells = new java.util.ArrayList<>();
 
         grid();
 
@@ -100,7 +104,6 @@ public class GamePanel extends JPanel implements KeyListener {
         backgroundLabel.add(livesLabel);
 
         //Stage
-        stage = 1;
         stageLabel = new JLabel("Stage: 1");
         stageLabel.setForeground(Color.WHITE);
         stageLabel.setBounds(650, 0, 120, 40);
@@ -134,6 +137,8 @@ public class GamePanel extends JPanel implements KeyListener {
 
                 moveBullets();
                 moveEnemies();
+                moveBoss();
+
                 dropEgg();
                 moveEggs();
                 moveEnemyBullets();
@@ -143,9 +148,8 @@ public class GamePanel extends JPanel implements KeyListener {
 
         timer.start();
     }
-    //----------------------------------------------------------------
-    //Methods
 
+    //----------------------------------------------------------------
     //GRID
     public void grid() {
 
@@ -156,14 +160,18 @@ public class GamePanel extends JPanel implements KeyListener {
 
                 int x = 100 + j * 70;
                 int y = 50 + i * 60;
+
                 Enemy enemy;
+
                 if (stage == 1)
                     enemy = new NormalEnemy(x, y);
                 else if (stage == 2)
                     enemy = (i % 2 == 0) ? new NormalEnemy(x, y) : new FastEnemy(x, y);
                 else
                     enemy = (i % 2 == 0) ? new ZigzagEnemy(x, y) : new ShooterEnemy(x, y);
+
                 int hitCount;
+
                 if (enemy instanceof FastEnemy)
                     hitCount = 1;
                 else if (stage <= 3)
@@ -193,12 +201,9 @@ public class GamePanel extends JPanel implements KeyListener {
     private void bulletsMovement() {
 
         for (int i = 0; i < bullets.size(); i++) {
-
-            Bullet bullet = bullets.get(i);
-            bullet.movement();
+            bullets.get(i).movement();
         }
     }
-
 
     private void bulletsCollision() {
 
@@ -206,6 +211,27 @@ public class GamePanel extends JPanel implements KeyListener {
 
             Bullet bullet = bullets.get(i);
 
+            //BOSS HIT
+            if (boss != null && bullet.hitEnemy(boss)) {
+
+                boss.damageBoss();
+
+                backgroundLabel.remove(bullet);
+                bullets.remove(i--);
+
+                if (boss.isDead()) {
+
+                    score += boss.getScore();
+                    scoreLabel.setText("Score: " + score);
+
+                    backgroundLabel.remove(boss);
+                    boss = null;
+                }
+
+                return;
+            }
+
+            //ENEMY HIT
             for (int j = 0; j < cells.size(); j++) {
 
                 Cell cell = cells.get(j);
@@ -241,15 +267,13 @@ public class GamePanel extends JPanel implements KeyListener {
 
         for (int i = 0; i < bullets.size(); i++) {
 
-            Bullet bullet = bullets.get(i);
-
-            if (bullet.getY() < 0) {
-
-                backgroundLabel.remove(bullet);
+            if (bullets.get(i).getY() < 0) {
+                backgroundLabel.remove(bullets.get(i));
                 bullets.remove(i--);
             }
         }
     }
+
     //----------------------------------------------------------------
     //ENEMIES
     public void moveEnemies() {
@@ -266,9 +290,7 @@ public class GamePanel extends JPanel implements KeyListener {
         for (int i = 0; i < cells.size(); i++) {
 
             Cell cell = cells.get(i);
-            Enemy enemy = cell.getEnemy();
-
-            enemy.moveHorizontal(enemyDirection * enemySpeed);
+            cell.getEnemy().moveHorizontal(enemyDirection * enemySpeed);
         }
     }
 
@@ -277,19 +299,18 @@ public class GamePanel extends JPanel implements KeyListener {
         for (int i = 0; i < cells.size(); i++) {
 
             Cell cell = cells.get(i);
-            Enemy enemy = cell.getEnemy();
 
-            if (enemy.hitPlane(plane)) {
+            if (cell.getEnemy().hitPlane(plane)) {
 
-                backgroundLabel.remove(enemy);
+                backgroundLabel.remove(cell.getEnemy());
                 cells.remove(i--);
 
                 loseLife();
             }
 
-            else if (enemy.isOutOfScreen()) {
+            else if (cell.getEnemy().isOutOfScreen()) {
 
-                backgroundLabel.remove(enemy);
+                backgroundLabel.remove(cell.getEnemy());
                 cells.remove(i--);
 
                 loseLife();
@@ -297,13 +318,11 @@ public class GamePanel extends JPanel implements KeyListener {
         }
     }
 
-
     private void enemiesStage() {
 
         boolean hitEdge = false;
 
         for (int i = 0; i < cells.size(); i++) {
-
             if (cells.get(i).getEnemy().hitEdge())
                 hitEdge = true;
         }
@@ -329,7 +348,18 @@ public class GamePanel extends JPanel implements KeyListener {
             eggs.clear();
             enemyBullets.clear();
 
+            boss = null;
+
             grid();
+        }
+    }
+
+    //----------------------------------------------------------------
+    //BOSS
+    private void moveBoss() {
+
+        if (boss != null) {
+            boss.moveBoss();
         }
     }
 
@@ -355,7 +385,7 @@ public class GamePanel extends JPanel implements KeyListener {
         }
     }
 
-    //----------------------------------------------------------------
+//----------------------------------------------------------------
 
     //Enemy bullets
     public void moveEnemyBullets() {
@@ -385,7 +415,7 @@ public class GamePanel extends JPanel implements KeyListener {
     }
 
     //----------------------------------------------------------------
-    //Drop Egg
+//Drop Egg
     public void dropEgg() {
 
         long currentTime = System.currentTimeMillis();
@@ -407,23 +437,29 @@ public class GamePanel extends JPanel implements KeyListener {
     }
 
     //----------------------------------------------------------------
-    //Eggs Movement
+    // Eggs Movement
     public void moveEggs() {
 
         for (int i = 0; i < eggs.size(); i++) {
 
             Egg egg = eggs.get(i);
+
             egg.movement();
 
+            boolean removed = false;
+
+            // HIT PLAYER
             if (egg.hitPlane(plane)) {
 
                 backgroundLabel.remove(egg);
                 eggs.remove(i--);
 
                 loseLife();
+                removed = true;
             }
 
-            else if (egg.getY() > 600) {
+            // OUT OF SCREEN
+            if (!removed && egg.getY() > 600) {
 
                 backgroundLabel.remove(egg);
                 eggs.remove(i--);
@@ -433,7 +469,9 @@ public class GamePanel extends JPanel implements KeyListener {
         backgroundLabel.repaint();
     }
 
-    //----------------------------------------------------------------
+
+
+//----------------------------------------------------------------
 
     //Lose life
     public void loseLife() {
@@ -460,7 +498,7 @@ public class GamePanel extends JPanel implements KeyListener {
 
 
     //----------------------------------------------------------------
-    //KEYBOARD
+//KEYBOARD
     @Override
     public void keyPressed(KeyEvent e) {
 
@@ -507,4 +545,4 @@ public class GamePanel extends JPanel implements KeyListener {
     }
     @Override public void keyReleased(KeyEvent e) {}
     @Override public void keyTyped(KeyEvent e) {}
-}
+    }
