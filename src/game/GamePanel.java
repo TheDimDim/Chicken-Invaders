@@ -59,8 +59,8 @@ public class GamePanel extends JPanel implements KeyListener {
     private boolean gameOver;
     private JLabel gameOverLabel;
 
-    private int rows = 2;
-    private int cols = 2;
+    private int rows = 1;
+    private int cols = 1;
 
     //----------------------------------------------------------------
 
@@ -108,8 +108,8 @@ public class GamePanel extends JPanel implements KeyListener {
         backgroundLabel.add(scoreLabel);
 
         //Lives
-        lives = 3;
-        livesLabel = new JLabel("Lives: 3");
+        lives = 20;
+        livesLabel = new JLabel("Lives: 10");
         livesLabel.setForeground(Color.WHITE);
         livesLabel.setBounds(50, 0, 200, 40);
         backgroundLabel.add(livesLabel);
