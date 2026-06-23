@@ -36,7 +36,4 @@ public abstract class Boss extends Enemy {
         return maxHealth;
     }
 
-    public void healthBar(Graphics g) {
-
-    }
 }

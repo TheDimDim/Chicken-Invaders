@@ -38,6 +38,7 @@ public class GamePanel extends JPanel implements KeyListener {
     //EGG
     private ArrayList<Egg> eggs;
     private long lastEggDropTime;
+    private long lastBossEggTime = 0;
 
     private int score;
     private JLabel scoreLabel;
@@ -143,9 +144,7 @@ public class GamePanel extends JPanel implements KeyListener {
                 moveEggs();
                 moveEnemyBullets();
                 shooterEnemiesShoot();
-                if (boss != null) {
-                    boss.healthBar(backgroundLabel.getGraphics());
-                }
+
             }
         });
 
@@ -466,24 +465,53 @@ public class GamePanel extends JPanel implements KeyListener {
     }
 
     //----------------------------------------------------------------
-//Drop Egg
-    public void dropEgg() {
+    // Drop Egg
+
+    private void dropEgg() {
 
         long currentTime = System.currentTimeMillis();
 
-        if (currentTime - lastEggDropTime >= 3000 && cells.size() > 0) {
+        //Boss eggs
+        if (boss != null) {
+
+            if (currentTime - lastBossEggTime >= 1500) {
+
+                int bossX = boss.getX() + boss.getWidth() / 2-20;
+                int bossY = boss.getY() + boss.getHeight() / 2-25;
+
+                Egg eggDown = new Egg(bossX, bossY, 0, 1);
+                Egg eggUp = new Egg(bossX, bossY, 0, -1);
+                Egg eggRight = new Egg(bossX, bossY, 1, 0);
+                Egg eggLeft = new Egg(bossX, bossY, -1, 0);
+
+                eggs.add(eggDown);
+                eggs.add(eggUp);
+                eggs.add(eggRight);
+                eggs.add(eggLeft);
+
+                backgroundLabel.add(eggDown);
+                backgroundLabel.add(eggUp);
+                backgroundLabel.add(eggRight);
+                backgroundLabel.add(eggLeft);
+
+                lastBossEggTime = currentTime;
+            }
+
+            return;
+        }
+
+        //Normal enemies eggs
+        if (currentTime - lastEggDropTime >= 3000 && !cells.isEmpty()) {
 
             int randomIndex = (int)(Math.random() * cells.size());
+            Enemy enemy = cells.get(randomIndex).getEnemy();
 
-            Cell cell = cells.get(randomIndex);
-            Enemy enemy = cell.getEnemy();
-
-            Egg egg = new Egg(enemy.getXPosition() + 15, enemy.getYPosition() + 50);
+            Egg egg = new Egg(enemy.getXPosition() + 10, enemy.getYPosition() + 40);
 
             eggs.add(egg);
             backgroundLabel.add(egg);
 
-            lastEggDropTime = currentTime;
+            lastEggDropTime= currentTime;
         }
     }
 
@@ -510,7 +538,7 @@ public class GamePanel extends JPanel implements KeyListener {
             }
 
             // OUT OF SCREEN
-            if (!removed && egg.getY() > 600) {
+            if (!removed && egg.isOutOfScreen()) {
 
                 backgroundLabel.remove(egg);
                 eggs.remove(i--);

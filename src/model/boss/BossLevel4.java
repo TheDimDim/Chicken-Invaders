@@ -19,10 +19,13 @@ public class BossLevel4 extends Boss {
 
         setBounds(x, y, 200, 200);
     }
+
     @Override
     public void damageBoss() {
         health--;
+        repaint();
     }
+
     @Override
     public boolean isDead() {
         return health <= 0;
@@ -32,13 +35,21 @@ public class BossLevel4 extends Boss {
         return super.getScore();
     }
 
-    public void healthBar(Graphics g) {
+    @Override
+    protected void paintComponent(Graphics g) {
+
+        super.paintComponent(g);
+
+        drawHealthBar(g);
+    }
+
+    private void drawHealthBar(Graphics g) {
 
         int barWidth = 160;
         int barHeight = 10;
 
-        int barX = getX();
-        int barY = getY() - 15;
+        int barX = 20;
+        int barY = 5;
 
         g.setColor(Color.RED);
         g.fillRect(barX, barY, barWidth, barHeight);
@@ -47,6 +58,10 @@ public class BossLevel4 extends Boss {
 
         g.setColor(Color.GREEN);
         g.fillRect(barX, barY, greenWidth, barHeight);
+
+        g.setColor(Color.WHITE);
+        g.drawRect(barX, barY, barWidth, barHeight);
     }
 
 }
+
