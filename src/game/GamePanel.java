@@ -54,8 +54,8 @@ public class GamePanel extends JPanel implements KeyListener {
     private boolean gameOver;
     private JLabel gameOverLabel;
 
-    private int rows = 5;
-    private int cols = 8;
+    private int rows = 2;
+    private int cols = 2;
 
     //----------------------------------------------------------------
 
@@ -139,12 +139,13 @@ public class GamePanel extends JPanel implements KeyListener {
                 moveBullets();
                 moveEnemies();
                 moveBoss();
-
-
                 dropEgg();
                 moveEggs();
                 moveEnemyBullets();
                 shooterEnemiesShoot();
+                if (boss != null) {
+                    boss.healthBar(backgroundLabel.getGraphics());
+                }
             }
         });
 
