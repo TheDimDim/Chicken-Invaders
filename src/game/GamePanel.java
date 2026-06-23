@@ -6,6 +6,7 @@ import model.Egg;
 import model.Plane;
 import model.boss.Boss;
 import model.boss.BossLevel4;
+import model.boss.BossLevel8;
 import model.enemy.*;
 import model.enemy.Cell;
 
@@ -30,7 +31,10 @@ public class GamePanel extends JPanel implements KeyListener {
     private ArrayList<Cell> cells;
     private ArrayList<Bullet> enemyBullets;
     private int enemyDirection;
-    private int enemySpeed;
+    private double enemySpeed;
+    private double enemyMoveCounter;
+    private int verticalStep;
+    private int eggDropInterval;
 
     //BOSS
     private Boss boss;
@@ -38,7 +42,7 @@ public class GamePanel extends JPanel implements KeyListener {
     //EGG
     private ArrayList<Egg> eggs;
     private long lastEggDropTime;
-    private long lastBossEggTime = 0;
+    private long lastBossEggTime;
 
     private int score;
     private JLabel scoreLabel;
@@ -68,10 +72,14 @@ public class GamePanel extends JPanel implements KeyListener {
 
         lastBulletShotTime = 0;
         lastEggDropTime = 0;
+        lastBossEggTime = 0;
 
         stage = 1;
         enemyDirection = 1;
         enemySpeed = 1;
+        enemyMoveCounter = 0;
+        verticalStep = 20;
+        eggDropInterval = 3000;
 
         eggs = new ArrayList<>();
         enemyBullets = new ArrayList<>();
@@ -89,6 +97,7 @@ public class GamePanel extends JPanel implements KeyListener {
         plane = new Plane();
         backgroundLabel.add(plane);
 
+        updateStageSettings();
         grid();
 
         //Score
@@ -152,41 +161,131 @@ public class GamePanel extends JPanel implements KeyListener {
     }
 
     //----------------------------------------------------------------
+    //STAGE SETTINGS
+    private void updateStageSettings() {
+
+        if (stage == 1) {
+            enemySpeed = 1;
+            verticalStep = 20;
+            eggDropInterval = 3000;
+        }
+
+        else if (stage == 2) {
+            enemySpeed = 1.5;
+            verticalStep = 20;
+            eggDropInterval = 2000;
+        }
+
+        else if (stage == 3) {
+            enemySpeed = 2;
+            verticalStep = 25;
+            eggDropInterval = 1500;
+        }
+
+        else if (stage == 4) {
+            enemySpeed = 1.5;
+            verticalStep = 0;
+            eggDropInterval = 1500;
+        }
+
+        else if (stage == 5) {
+            enemySpeed = 2.5;
+            verticalStep = 25;
+            eggDropInterval = 1000;
+        }
+
+        else if (stage == 6) {
+            enemySpeed = 3;
+            verticalStep = 30;
+            eggDropInterval = 800;
+        }
+
+        else if (stage == 7) {
+            enemySpeed = 3.5;
+            verticalStep = 30;
+            eggDropInterval = 700;
+        }
+
+        else if (stage == 8) {
+            enemySpeed = 2;
+            verticalStep = 0;
+            eggDropInterval = 1000;
+        }
+    }
+
+    //----------------------------------------------------------------
     //GRID
     public void grid() {
+
         for (Cell cell : cells) {
             backgroundLabel.remove(cell.getEnemy());
         }
+
         cells.clear();
 
-        if (stage == 4) {
+        if (stage == 4 || stage == 8) {
             backgroundLabel.revalidate();
             backgroundLabel.repaint();
             return;
         }
 
         for (int i = 0; i < rows; i++) {
+
             for (int j = 0; j < cols; j++) {
+
                 int x = 100 + j * 70;
                 int y = 50 + i * 60;
 
                 Enemy enemy;
 
-                if (stage == 1)
+                if (stage == 1) {
                     enemy = new NormalEnemy(x, y);
-                else if (stage == 2)
+                }
+
+                else if (stage == 2) {
                     enemy = (i % 2 == 0) ? new NormalEnemy(x, y) : new FastEnemy(x, y);
-                else
+                }
+
+                else if (stage == 3) {
+                    enemy = (i % 2 == 0) ? new NormalEnemy(x, y) : new ZigzagEnemy(x, y);
+                }
+
+                else if (stage == 5) {
+                    enemy = (i % 2 == 0) ? new ShooterEnemy(x, y) : new FastEnemy(x, y);
+                }
+
+                else if (stage == 6) {
                     enemy = (i % 2 == 0) ? new ZigzagEnemy(x, y) : new ShooterEnemy(x, y);
+                }
+
+                else {
+                    if (j % 4 == 0)
+                        enemy = new NormalEnemy(x, y);
+                    else if (j % 4 == 1)
+                        enemy = new FastEnemy(x, y);
+                    else if (j % 4 == 2)
+                        enemy = new ZigzagEnemy(x, y);
+                    else
+                        enemy = new ShooterEnemy(x, y);
+                }
 
                 int hitCount;
 
-                if (enemy instanceof FastEnemy)
+                if (enemy instanceof FastEnemy && stage <= 3) {
                     hitCount = 1;
-                else if (stage <= 3)
+                }
+
+                else if (stage == 1 || stage == 2) {
                     hitCount = 2;
-                else
+                }
+
+                else if (stage == 3 || stage == 5) {
                     hitCount = 3;
+                }
+
+                else {
+                    hitCount = 4;
+                }
 
                 Cell cell = new Cell(enemy, hitCount);
 
@@ -194,9 +293,10 @@ public class GamePanel extends JPanel implements KeyListener {
                 backgroundLabel.add(enemy);
             }
         }
+
+        backgroundLabel.revalidate();
+        backgroundLabel.repaint();
     }
-
-
 
     //----------------------------------------------------------------
     //BULLETS
@@ -238,8 +338,8 @@ public class GamePanel extends JPanel implements KeyListener {
 
                     backgroundLabel.remove(boss);
                     boss = null;
-                    stage ++;
-                    stageLabel.setText("Stage: " + stage);
+
+                    bossStageFinished();
                 }
 
                 return;
@@ -290,6 +390,10 @@ public class GamePanel extends JPanel implements KeyListener {
     //ENEMY
     public void moveEnemies() {
 
+        if (boss != null) {
+            return;
+        }
+
         enemiesCleanup();
         enemiesMovement();
         enemiesCollision();
@@ -312,10 +416,20 @@ public class GamePanel extends JPanel implements KeyListener {
 
     private void enemiesMovement() {
 
+        enemyMoveCounter += enemySpeed;
+
+        int moveAmount = (int) enemyMoveCounter;
+
+        if (moveAmount < 1) {
+            return;
+        }
+
+        enemyMoveCounter -= moveAmount;
+
         for (int i = 0; i < cells.size(); i++) {
 
             Cell cell = cells.get(i);
-            cell.getEnemy().moveHorizontal(enemyDirection * enemySpeed);
+            cell.getEnemy().moveHorizontal(enemyDirection * moveAmount);
         }
     }
 
@@ -342,11 +456,13 @@ public class GamePanel extends JPanel implements KeyListener {
             }
         }
     }
+
     private void enemiesStage() {
 
         boolean hitEdge = false;
 
         for (int i = 0; i < cells.size(); i++) {
+
             if (cells.get(i).getEnemy().hitEdge())
                 hitEdge = true;
         }
@@ -354,8 +470,9 @@ public class GamePanel extends JPanel implements KeyListener {
         if (hitEdge) {
 
             enemyDirection *= -1;
+
             for (Cell cell : cells)
-                cell.getEnemy().moveVertical(15);
+                cell.getEnemy().moveVertical(verticalStep);
         }
 
         boolean allDead = true;
@@ -369,36 +486,32 @@ public class GamePanel extends JPanel implements KeyListener {
 
         if ((allDead || cells.isEmpty()) && boss == null) {
 
-
             stage++;
-            enemySpeed = stage;
 
             stageLabel.setText("Stage: " + stage);
 
+            updateStageSettings();
+
             plane.resetPosition();
 
-            for (Egg egg : eggs) {
-                backgroundLabel.remove(egg);
-            }
-            for (Bullet enemyBullet : enemyBullets) {
-                backgroundLabel.remove(enemyBullet);
-            }
-            for (Bullet b : bullets) {
-                backgroundLabel.remove(b);
-            }
+            clearMovingObjects();
 
-            bullets.clear();
-            eggs.clear();
-            enemyBullets.clear();
+            if (stage == 4) {
 
-            boss = null;
-
-            grid();
-
-            if (stage == 4 ) {
-                boss = new BossLevel4(300, 50, 20, 500);
+                boss = new BossLevel4(300, 50, 50, 500);
                 backgroundLabel.add(boss);
             }
+
+            else if (stage == 8) {
+
+                boss = new BossLevel8(290, 40, 100, 1000);
+                backgroundLabel.add(boss);
+            }
+
+            else {
+                grid();
+            }
+
             backgroundLabel.revalidate();
             backgroundLabel.repaint();
         }
@@ -413,9 +526,61 @@ public class GamePanel extends JPanel implements KeyListener {
         }
     }
 
+    private void bossStageFinished() {
+
+        stage++;
+
+        stageLabel.setText("Stage: " + stage);
+
+        updateStageSettings();
+
+        plane.resetPosition();
+
+        clearMovingObjects();
+
+        if (stage == 9) {
+
+            gameOver = true;
+            gameOverLabel.setText("YOU WIN");
+            gameOverLabel.setVisible(true);
+
+            SoundManager.playSoundWithVolume("C:\\Users\\Asus\\Downloads\\sound-effects-20260621T162013Z-3-001\\sound-effects\\mixkit-retro-arcade-game-over-470.wav", 6.0f);
+        }
+
+        else {
+            grid();
+        }
+
+        backgroundLabel.revalidate();
+        backgroundLabel.repaint();
+    }
+
+    private void clearMovingObjects() {
+
+        for (Egg egg : eggs) {
+            backgroundLabel.remove(egg);
+        }
+
+        for (Bullet enemyBullet : enemyBullets) {
+            backgroundLabel.remove(enemyBullet);
+        }
+
+        for (Bullet b : bullets) {
+            backgroundLabel.remove(b);
+        }
+
+        bullets.clear();
+        eggs.clear();
+        enemyBullets.clear();
+    }
+
     //----------------------------------------------------------------
     //Shooter enemy
     public void shooterEnemiesShoot() {
+
+        if (boss != null) {
+            return;
+        }
 
         for (int i = 0; i < cells.size(); i++) {
 
@@ -435,8 +600,7 @@ public class GamePanel extends JPanel implements KeyListener {
         }
     }
 
-//----------------------------------------------------------------
-
+    //----------------------------------------------------------------
     //Enemy bullets
     public void moveEnemyBullets() {
 
@@ -466,7 +630,6 @@ public class GamePanel extends JPanel implements KeyListener {
 
     //----------------------------------------------------------------
     // Drop Egg
-
     private void dropEgg() {
 
         long currentTime = System.currentTimeMillis();
@@ -474,10 +637,17 @@ public class GamePanel extends JPanel implements KeyListener {
         //Boss eggs
         if (boss != null) {
 
-            if (currentTime - lastBossEggTime >= 1500) {
+            int bossEggInterval;
 
-                int bossX = boss.getX() + boss.getWidth() / 2-20;
-                int bossY = boss.getY() + boss.getHeight() / 2-25;
+            if (stage == 8)
+                bossEggInterval = 1000;
+            else
+                bossEggInterval = 1500;
+
+            if (currentTime - lastBossEggTime >= bossEggInterval) {
+
+                int bossX = boss.getX() + boss.getWidth() / 2 - 20;
+                int bossY = boss.getY() + boss.getHeight() / 2 - 25;
 
                 Egg eggDown = new Egg(bossX, bossY, 0, 1);
                 Egg eggUp = new Egg(bossX, bossY, 0, -1);
@@ -494,6 +664,24 @@ public class GamePanel extends JPanel implements KeyListener {
                 backgroundLabel.add(eggRight);
                 backgroundLabel.add(eggLeft);
 
+                if (stage == 8) {
+
+                    Egg eggDownRight = new Egg(bossX, bossY, 1, 1);
+                    Egg eggDownLeft = new Egg(bossX, bossY, -1, 1);
+                    Egg eggUpRight = new Egg(bossX, bossY, 1, -1);
+                    Egg eggUpLeft = new Egg(bossX, bossY, -1, -1);
+
+                    eggs.add(eggDownRight);
+                    eggs.add(eggDownLeft);
+                    eggs.add(eggUpRight);
+                    eggs.add(eggUpLeft);
+
+                    backgroundLabel.add(eggDownRight);
+                    backgroundLabel.add(eggDownLeft);
+                    backgroundLabel.add(eggUpRight);
+                    backgroundLabel.add(eggUpLeft);
+                }
+
                 lastBossEggTime = currentTime;
             }
 
@@ -501,7 +689,7 @@ public class GamePanel extends JPanel implements KeyListener {
         }
 
         //Normal enemies eggs
-        if (currentTime - lastEggDropTime >= 3000 && !cells.isEmpty()) {
+        if (currentTime - lastEggDropTime >= eggDropInterval && !cells.isEmpty()) {
 
             int randomIndex = (int)(Math.random() * cells.size());
             Enemy enemy = cells.get(randomIndex).getEnemy();
@@ -511,7 +699,7 @@ public class GamePanel extends JPanel implements KeyListener {
             eggs.add(egg);
             backgroundLabel.add(egg);
 
-            lastEggDropTime= currentTime;
+            lastEggDropTime = currentTime;
         }
     }
 
@@ -548,10 +736,7 @@ public class GamePanel extends JPanel implements KeyListener {
         backgroundLabel.repaint();
     }
 
-
-
-//----------------------------------------------------------------
-
+    //----------------------------------------------------------------
     //Lose life
     public void loseLife() {
 
@@ -563,21 +748,19 @@ public class GamePanel extends JPanel implements KeyListener {
             if (lives == 0) {
                 SoundManager.playSoundWithVolume("C:\\Users\\Asus\\Downloads\\sound-effects-20260621T162013Z-3-001\\sound-effects\\mixkit-retro-arcade-game-over-470.wav", 6.0f);
 
-
                 gameOver = true;
+                gameOverLabel.setText("GAME OVER");
                 gameOverLabel.setVisible(true);
             }
 
             else {
                 SoundManager.playSoundWithVolume("C:\\Users\\Asus\\Downloads\\sound-effects-20260621T162013Z-3-001\\sound-effects\\mixkit-epic-impact-afar-explosion-2782.wav", -12.0f);
-
             }
         }
     }
 
-
     //----------------------------------------------------------------
-//KEYBOARD
+    //KEYBOARD
     @Override
     public void keyPressed(KeyEvent e) {
 
@@ -622,6 +805,7 @@ public class GamePanel extends JPanel implements KeyListener {
             gameMain.showMainMenu();
         }
     }
+
     @Override public void keyReleased(KeyEvent e) {}
     @Override public void keyTyped(KeyEvent e) {}
-    }
+}
