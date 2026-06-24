@@ -3,6 +3,7 @@ package game;
 import managers.SoundManager;
 import model.Bullet;
 import model.Egg;
+import model.Explosion;
 import model.Plane;
 import model.boss.Boss;
 import model.boss.BossLevel4;
@@ -46,18 +47,21 @@ public class GamePanel extends JPanel implements KeyListener {
 
     private int score;
     private JLabel scoreLabel;
+    private JLabel messageLabel;
 
     private int lives;
     private JLabel livesLabel;
 
-    private int stage;
-    private JLabel stageLabel;
+    private int level;
+    private JLabel levelLabel;
 
     private boolean paused;
     private JLabel pauseLabel;
 
     private boolean gameOver;
     private JLabel gameOverLabel;
+
+    private JLabel fireLabel;
 
     private int rows = 1;
     private int cols = 1;
@@ -74,7 +78,7 @@ public class GamePanel extends JPanel implements KeyListener {
         lastEggDropTime = 0;
         lastBossEggTime = 0;
 
-        stage = 1;
+        level = 1;
         enemyDirection = 1;
         enemySpeed = 1;
         enemyMoveCounter = 0;
@@ -97,7 +101,7 @@ public class GamePanel extends JPanel implements KeyListener {
         plane = new Plane();
         backgroundLabel.add(plane);
 
-        updateStageSettings();
+        updateLevelSettings();
         grid();
 
         //Score
@@ -114,11 +118,11 @@ public class GamePanel extends JPanel implements KeyListener {
         livesLabel.setBounds(50, 0, 200, 40);
         backgroundLabel.add(livesLabel);
 
-        //Stage
-        stageLabel = new JLabel("Stage: 1");
-        stageLabel.setForeground(Color.WHITE);
-        stageLabel.setBounds(650, 0, 120, 40);
-        backgroundLabel.add(stageLabel);
+        //Level
+        levelLabel = new JLabel("LEVEL: 1");
+        levelLabel.setForeground(Color.WHITE);
+        levelLabel.setBounds(650, 0, 120, 40);
+        backgroundLabel.add(levelLabel);
 
         //Pause
         paused = false;
@@ -138,75 +142,93 @@ public class GamePanel extends JPanel implements KeyListener {
         gameOverLabel.setVisible(false);
         backgroundLabel.add(gameOverLabel);
 
+        //level Message
+        messageLabel = new JLabel("");
+        messageLabel.setForeground(Color.YELLOW);
+        messageLabel.setFont(new Font("Arial", Font.BOLD, 28));
+        messageLabel.setBounds(220, 180, 400, 60);
+        messageLabel.setVisible(false);
+        backgroundLabel.add(messageLabel);
+
+        //Fire
+        fireLabel = new JLabel("Fire: 1");
+        fireLabel.setForeground(Color.WHITE);
+        fireLabel.setBounds(650, 40, 120, 40);
+        backgroundLabel.add(fireLabel);
+
         setFocusable(true);
         addKeyListener(this);
 
         //Timer
-        timer = new Timer(16, e -> {
 
-            if (!paused && !gameOver) {
+        timer = new Timer(16, new ActionListener() {
 
-                moveBullets();
-                moveEnemies();
-                moveBoss();
-                dropEgg();
-                moveEggs();
-                moveEnemyBullets();
-                shooterEnemiesShoot();
+            @Override
+            public void actionPerformed(ActionEvent e) {
 
+                if (!paused && !gameOver) {
+
+
+                    moveBullets();
+                    moveEnemies();
+                    moveBoss();
+                    dropEgg();
+                    moveEggs();
+                    moveEnemyBullets();
+                    shooterEnemiesShoot();
+                }
             }
         });
-
         timer.start();
     }
 
     //----------------------------------------------------------------
-    //STAGE SETTINGS
-    private void updateStageSettings() {
+    //LEVEL SETTINGS
+    private void updateLevelSettings() {
 
-        if (stage == 1) {
+        if (level == 1) {
             enemySpeed = 1;
             verticalStep = 20;
             eggDropInterval = 3000;
         }
 
-        else if (stage == 2) {
+        else if (level == 2) {
             enemySpeed = 1.5;
             verticalStep = 20;
             eggDropInterval = 2000;
         }
 
-        else if (stage == 3) {
+        else if (level == 3) {
             enemySpeed = 2;
             verticalStep = 25;
             eggDropInterval = 1500;
         }
 
-        else if (stage == 4) {
+        else if (level == 4) {
             enemySpeed = 1.5;
             verticalStep = 0;
             eggDropInterval = 1500;
         }
 
-        else if (stage == 5) {
+        else if (level == 5) {
             enemySpeed = 2.5;
             verticalStep = 25;
             eggDropInterval = 1000;
         }
 
-        else if (stage == 6) {
+        else if (level == 6) {
             enemySpeed = 3;
             verticalStep = 30;
             eggDropInterval = 800;
         }
 
-        else if (stage == 7) {
+        else if (level == 7) {
             enemySpeed = 3.5;
             verticalStep = 30;
             eggDropInterval = 700;
         }
 
-        else if (stage == 8) {
+        else if (level == 8) {
             enemySpeed = 2;
             verticalStep = 0;
             eggDropInterval = 1000;
@@ -223,7 +245,7 @@ public class GamePanel extends JPanel implements KeyListener {
 
         cells.clear();
 
-        if (stage == 4 || stage == 8) {
+        if (level == 4 || level == 8) {
             backgroundLabel.revalidate();
             backgroundLabel.repaint();
             return;
@@ -238,23 +260,23 @@ public class GamePanel extends JPanel implements KeyListener {
 
                 Enemy enemy;
 
-                if (stage == 1) {
+                if (level == 1) {
                     enemy = new NormalEnemy(x, y);
                 }
 
-                else if (stage == 2) {
+                else if (level == 2) {
                     enemy = (i % 2 == 0) ? new NormalEnemy(x, y) : new FastEnemy(x, y);
                 }
 
-                else if (stage == 3) {
+                else if (level == 3) {
                     enemy = (i % 2 == 0) ? new NormalEnemy(x, y) : new ZigzagEnemy(x, y);
                 }
 
-                else if (stage == 5) {
+                else if (level == 5) {
                     enemy = (i % 2 == 0) ? new ShooterEnemy(x, y) : new FastEnemy(x, y);
                 }
 
-                else if (stage == 6) {
+                else if (level == 6) {
                     enemy = (i % 2 == 0) ? new ZigzagEnemy(x, y) : new ShooterEnemy(x, y);
                 }
 
@@ -271,15 +293,15 @@ public class GamePanel extends JPanel implements KeyListener {
 
                 int hitCount;
 
-                if (enemy instanceof FastEnemy && stage <= 3) {
+                if (enemy instanceof FastEnemy && level <= 3) {
                     hitCount = 1;
                 }
 
-                else if (stage == 1 || stage == 2) {
+                else if (level == 1 || level == 2) {
                     hitCount = 2;
                 }
 
-                else if (stage == 3 || stage == 5) {
+                else if (level == 3 || level == 5) {
                     hitCount = 3;
                 }
 
@@ -339,7 +361,7 @@ public class GamePanel extends JPanel implements KeyListener {
                     backgroundLabel.remove(boss);
                     boss = null;
 
-                    bossStageFinished();
+                    bossLevelFinished();
                 }
 
                 return;
@@ -397,7 +419,7 @@ public class GamePanel extends JPanel implements KeyListener {
         enemiesCleanup();
         enemiesMovement();
         enemiesCollision();
-        enemiesStage();
+        enemiesLevel();
 
         backgroundLabel.repaint();
     }
@@ -457,7 +479,7 @@ public class GamePanel extends JPanel implements KeyListener {
         }
     }
 
-    private void enemiesStage() {
+    private void enemiesLevel() {
 
         boolean hitEdge = false;
 
@@ -485,24 +507,30 @@ public class GamePanel extends JPanel implements KeyListener {
         }
 
         if ((allDead || cells.isEmpty()) && boss == null) {
+            if (level == 1 || level == 2 || level == 3 || level == 5 || level == 6 || level == 7) {
 
-            stage++;
+                score += 200;
+                scoreLabel.setText("Score: " + score);
+                showMessage("LEVEL COMPLETE +200");
+            }
 
-            stageLabel.setText("Stage: " + stage);
+            level++;
 
-            updateStageSettings();
+            levelLabel.setText("LEVEL: " + level);
+
+            updateLevelSettings();
 
             plane.resetPosition();
 
             clearMovingObjects();
 
-            if (stage == 4) {
+            if (level == 4) {
 
                 boss = new BossLevel4(300, 50, 50, 500);
                 backgroundLabel.add(boss);
             }
 
-            else if (stage == 8) {
+            else if (level == 8) {
 
                 boss = new BossLevel8(290, 40, 100, 1000);
                 backgroundLabel.add(boss);
@@ -526,19 +554,19 @@ public class GamePanel extends JPanel implements KeyListener {
         }
     }
 
-    private void bossStageFinished() {
+    private void bossLevelFinished() {
 
-        stage++;
+        level++;
 
-        stageLabel.setText("Stage: " + stage);
+        levelLabel.setText("LEVEL: " + level);
 
-        updateStageSettings();
+        updateLevelSettings();
 
         plane.resetPosition();
 
         clearMovingObjects();
 
-        if (stage == 9) {
+        if (level == 9) {
 
             gameOver = true;
             gameOverLabel.setText("YOU WIN");
@@ -639,7 +667,7 @@ public class GamePanel extends JPanel implements KeyListener {
 
             int bossEggInterval;
 
-            if (stage == 8)
+            if (level == 8)
                 bossEggInterval = 1000;
             else
                 bossEggInterval = 1500;
@@ -664,7 +692,7 @@ public class GamePanel extends JPanel implements KeyListener {
                 backgroundLabel.add(eggRight);
                 backgroundLabel.add(eggLeft);
 
-                if (stage == 8) {
+                if (level == 8) {
 
                     Egg eggDownRight = new Egg(bossX, bossY, 1, 1);
                     Egg eggDownLeft = new Egg(bossX, bossY, -1, 1);
@@ -717,7 +745,6 @@ public class GamePanel extends JPanel implements KeyListener {
 
             // HIT PLAYER
             if (egg.hitPlane(plane)) {
-
                 backgroundLabel.remove(egg);
                 eggs.remove(i--);
 
@@ -735,6 +762,50 @@ public class GamePanel extends JPanel implements KeyListener {
 
         backgroundLabel.repaint();
     }
+
+    //----------------------------------------------------------------
+    // Explosion
+    private void showExplosion(int x, int y) {
+
+        Explosion explosion = new Explosion(x, y);
+
+        backgroundLabel.add(explosion);
+        backgroundLabel.repaint();
+
+        Timer explosionTimer = new Timer(300, new ActionListener() {
+
+            @Override
+            public void actionPerformed(ActionEvent e) {
+
+                backgroundLabel.remove(explosion);
+                backgroundLabel.repaint();
+            }
+        });
+
+        explosionTimer.setRepeats(false);
+        explosionTimer.start();
+    }
+
+    //----------------------------------------------------------------
+    // Message
+    private void showMessage(String text) {
+
+        messageLabel.setText(text);
+        messageLabel.setVisible(true);
+
+        Timer messageTimer = new Timer(1000, new ActionListener() {
+
+            @Override
+            public void actionPerformed(ActionEvent e) {
+
+                messageLabel.setVisible(false);
+            }
+        });
+
+        messageTimer.setRepeats(false);
+        messageTimer.start();
+    }
+
 
     //----------------------------------------------------------------
     //Lose life

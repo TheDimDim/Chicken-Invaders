@@ -1,5 +1,6 @@
 package game;
 
+import ui.LoginPanel;
 import ui.MainMenu;
 
 import javax.swing.*;
@@ -36,6 +37,16 @@ public class GameMain extends JFrame {
 
         MainMenu mainMenu = new MainMenu(this);
         add(mainMenu);
+
+        revalidate();
+        repaint();
+    }
+
+    //----------------------------------------------------------------
+
+    public void showLoginPanel() {
+
+        setContentPane(new LoginPanel(this));
 
         revalidate();
         repaint();

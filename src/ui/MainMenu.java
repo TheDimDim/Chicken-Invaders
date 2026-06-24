@@ -37,9 +37,11 @@ public class MainMenu extends JPanel {
         backgroundLabel.add(newGameButton);
 
         newGameButton.addActionListener(new ActionListener() {
+
             @Override
             public void actionPerformed(ActionEvent e) {
-                gameMain.startNewGame();
+
+                gameMain.showLoginPanel();
             }
         });
 
