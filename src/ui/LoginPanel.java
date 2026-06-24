@@ -1,6 +1,7 @@
 package ui;
 
 import game.GameMain;
+import managers.DatabaseManager;
 
 import javax.swing.*;
 import java.awt.*;
@@ -47,12 +48,57 @@ public class LoginPanel extends JPanel {
         passwordField.setBounds(370, 230, 180, 30);
         add(passwordField);
 
+        //LOGIN
+
         JButton loginButton = new JButton("Login");
         loginButton.setBounds(300, 300, 100, 35);
         add(loginButton);
 
+        loginButton.addActionListener(new java.awt.event.ActionListener() {
+
+            @Override
+            public void actionPerformed(java.awt.event.ActionEvent e) {
+
+                String username = usernameField.getText();
+                String password = new String(passwordField.getPassword());
+
+                if (username.isEmpty() || password.isEmpty()) {
+
+                    JOptionPane.showMessageDialog(null, "Please fill all fields");
+                }
+
+                else {
+                    boolean loggedIn = DatabaseManager.loginUser(username, password);
+
+                    if (loggedIn) {
+
+                        gameMain.startNewGame();
+                    }
+
+                    else {
+
+                        JOptionPane.showMessageDialog(null, "Wrong username or password");
+                    }
+
+                }
+            }
+        });
+
+        //REGISTER
         JButton registerButton = new JButton("Register");
         registerButton.setBounds(420, 300, 120, 35);
         add(registerButton);
+
+        registerButton.addActionListener(new java.awt.event.ActionListener() {
+
+            @Override
+            public void actionPerformed(java.awt.event.ActionEvent e) {
+
+                gameMain.showRegisterPanel();
+            }
+        });
     }
+
+
+    
 }

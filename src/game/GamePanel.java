@@ -1,5 +1,6 @@
 package game;
 
+import managers.DatabaseManager;
 import managers.SoundManager;
 import model.Bullet;
 import model.Egg;
@@ -112,7 +113,7 @@ public class GamePanel extends JPanel implements KeyListener {
         backgroundLabel.add(scoreLabel);
 
         //Lives
-        lives = 20;
+        lives = 3;
         livesLabel = new JLabel("Lives: 10");
         livesLabel.setForeground(Color.WHITE);
         livesLabel.setBounds(50, 0, 200, 40);
@@ -571,6 +572,7 @@ public class GamePanel extends JPanel implements KeyListener {
             gameOver = true;
             gameOverLabel.setText("YOU WIN");
             gameOverLabel.setVisible(true);
+            DatabaseManager.saveScore(score, level);
 
             SoundManager.playSoundWithVolume("C:\\Users\\Asus\\Downloads\\sound-effects-20260621T162013Z-3-001\\sound-effects\\mixkit-retro-arcade-game-over-470.wav", 6.0f);
         }
@@ -822,6 +824,7 @@ public class GamePanel extends JPanel implements KeyListener {
                 gameOver = true;
                 gameOverLabel.setText("GAME OVER");
                 gameOverLabel.setVisible(true);
+                DatabaseManager.saveScore(score, level);
             }
 
             else {

@@ -2,6 +2,7 @@ package game;
 
 import ui.LoginPanel;
 import ui.MainMenu;
+import ui.RegisterPanel;
 
 import javax.swing.*;
 import java.awt.*;
@@ -21,13 +22,14 @@ public class GameMain extends JFrame {
 
     //----------------------------------------------------------------
     public void startNewGame() {
-        getContentPane().removeAll();
 
         GamePanel gamePanel = new GamePanel(this);
-        add(gamePanel);
+
+        setContentPane(gamePanel);
 
         revalidate();
         repaint();
+
         gamePanel.requestFocusInWindow();
     }
 
@@ -47,6 +49,15 @@ public class GameMain extends JFrame {
     public void showLoginPanel() {
 
         setContentPane(new LoginPanel(this));
+
+        revalidate();
+        repaint();
+    }
+    //----------------------------------------------------------------
+
+    public void showRegisterPanel() {
+
+        setContentPane(new RegisterPanel(this));
 
         revalidate();
         repaint();
