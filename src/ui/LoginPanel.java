@@ -72,7 +72,7 @@ public class LoginPanel extends JPanel {
 
                     if (loggedIn) {
 
-                        gameMain.startNewGame();
+                        gameMain.showMainMenu();
                     }
 
                     else {

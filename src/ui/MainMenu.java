@@ -1,6 +1,7 @@
 package ui;
 
 import game.GameMain;
+import managers.DatabaseManager;
 
 import javax.swing.*;
 import java.awt.*;
@@ -31,30 +32,27 @@ public class MainMenu extends JPanel {
         backgroundLabel.add(titleLabel);
 
         //----------------------------------------------------------------
-        //New game button
-        JButton newGameButton = new JButton("New Game");
-        newGameButton.setBounds(300, 160, 200, 40);
-        backgroundLabel.add(newGameButton);
-
-        newGameButton.addActionListener(new ActionListener() {
-
-            @Override
-            public void actionPerformed(ActionEvent e) {
-
-                gameMain.showLoginPanel();
-            }
-        });
-
-        //----------------------------------------------------------------
 
         JButton highScoresButton = new JButton("High Scores");
         highScoresButton.setBounds(300, 220, 200, 40);
         backgroundLabel.add(highScoresButton);
         //----------------------------------------------------------------
+        //Setting button
 
         JButton settingsButton = new JButton("Settings");
         settingsButton.setBounds(300, 280, 200, 40);
         backgroundLabel.add(settingsButton);
+
+        settingsButton.addActionListener(new ActionListener() {
+
+            @Override
+            public void actionPerformed(ActionEvent e) {
+
+                gameMain.showSettingsPanel();
+            }
+        });
+
+
         //----------------------------------------------------------------
         //How to play button
         JButton howToPlayButton = new JButton("How to Play");
@@ -78,6 +76,31 @@ public class MainMenu extends JPanel {
         });
 
         //----------------------------------------------------------------
+//New game button
+        JButton newGameButton = new JButton("New Game");
+        newGameButton.setBounds(300, 160, 200, 40);
+        backgroundLabel.add(newGameButton);
+
+        newGameButton.addActionListener(new ActionListener() {
+
+            @Override
+            public void actionPerformed(ActionEvent e) {
+
+                if (DatabaseManager.getCurrentUsername() == null) {
+
+                    gameMain.showLoginPanel();
+                }
+
+                else {
+
+                    gameMain.startNewGame();
+                }
+            }
+        });
+
+
+
+        //----------------------------------------------------------------
         //Exit button
         JButton exitButton = new JButton("Exit");
         exitButton.setBounds(300, 400, 200, 40);
@@ -90,5 +113,6 @@ public class MainMenu extends JPanel {
             }
         });
     }
+
 
 }
