@@ -2,6 +2,7 @@ package ui;
 
 import game.GameMain;
 import managers.DatabaseManager;
+import managers.SoundManager;
 
 import javax.swing.*;
 import java.awt.*;
@@ -16,6 +17,10 @@ public class MainMenu extends JPanel {
 
         this.gameMain = gameMain;
         setLayout(null);
+        if (DatabaseManager.getBackgroundMusic() == 1) {
+
+            SoundManager.playBackgroundMusic("C:\\Users\\Asus\\Downloads\\background.wav");
+        }
 
         ImageIcon background = new ImageIcon("C:\\Users\\Asus\\Downloads\\background.jpg");
         Image backgroundImage = background.getImage().getScaledInstance(800, 600, Image.SCALE_SMOOTH);

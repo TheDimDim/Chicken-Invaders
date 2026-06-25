@@ -64,8 +64,8 @@ public class GamePanel extends JPanel implements KeyListener {
 
     private JLabel fireLabel;
 
-    private int rows = 1;
-    private int cols = 1;
+    private int rows = 4;
+    private int cols = 4;
 
     //----------------------------------------------------------------
 
@@ -105,6 +105,11 @@ public class GamePanel extends JPanel implements KeyListener {
         updateLevelSettings();
         grid();
 
+        if (DatabaseManager.getBackgroundMusic() == 1) {
+
+            SoundManager.playBackgroundMusic("C:\\Users\\Asus\\Downloads\\background.wav");
+        }
+
         //Score
         score = 0;
         scoreLabel = new JLabel("Score: 0");
@@ -113,8 +118,8 @@ public class GamePanel extends JPanel implements KeyListener {
         backgroundLabel.add(scoreLabel);
 
         //Lives
-        lives = 3;
-        livesLabel = new JLabel("Lives: 10");
+        lives = 40;
+        livesLabel = new JLabel("Lives: 3");
         livesLabel.setForeground(Color.WHITE);
         livesLabel.setBounds(50, 0, 200, 40);
         backgroundLabel.add(livesLabel);
@@ -133,6 +138,24 @@ public class GamePanel extends JPanel implements KeyListener {
         pauseLabel.setBounds(290, 240, 250, 70);
         pauseLabel.setVisible(false);
         backgroundLabel.add(pauseLabel);
+
+        //Back button
+        JButton backButton = new JButton("Back");
+        backButton.setBounds(650, 80, 100, 30);
+        backgroundLabel.add(backButton);
+
+        backButton.addActionListener(new ActionListener() {
+
+            @Override
+            public void actionPerformed(ActionEvent e) {
+
+                SoundManager.stopBackgroundMusic();
+
+                timer.stop();
+
+                gameMain.showMainMenu();
+            }
+        });
 
         //Game Over
         gameOver = false;
@@ -161,14 +184,12 @@ public class GamePanel extends JPanel implements KeyListener {
         addKeyListener(this);
 
         //Timer
-
         timer = new Timer(16, new ActionListener() {
 
             @Override
             public void actionPerformed(ActionEvent e) {
 
                 if (!paused && !gameOver) {
-
 
                     moveBullets();
                     moveEnemies();
@@ -180,6 +201,7 @@ public class GamePanel extends JPanel implements KeyListener {
                 }
             }
         });
+
         timer.start();
     }
 
@@ -349,7 +371,11 @@ public class GamePanel extends JPanel implements KeyListener {
             if (boss != null && bullet.hitEnemy(boss)) {
 
                 boss.damageBoss();
-                SoundManager.playSoundWithVolume("C:\\Users\\Asus\\Downloads\\sound-effects-20260621T162013Z-3-001\\sound-effects\\mixkit-epic-impact-afar-explosion-2782.wav", -12.0f);
+
+                if (DatabaseManager.getCrashSound() == 1) {
+
+                    SoundManager.playSoundWithVolume("C:\\Users\\Asus\\Downloads\\sound-effects-20260621T162013Z-3-001\\sound-effects\\mixkit-epic-impact-afar-explosion-2782.wav", -12.0f);
+                }
 
                 backgroundLabel.remove(bullet);
                 bullets.remove(i--);
@@ -375,8 +401,10 @@ public class GamePanel extends JPanel implements KeyListener {
 
                 if (bullet.hitEnemy(cell.getEnemy())) {
 
-                    SoundManager.playSoundWithVolume(
-                            "C:\\Users\\Asus\\Downloads\\sound-effects-20260621T162013Z-3-001\\sound-effects\\mixkit-epic-impact-afar-explosion-2782.wav", -12.0f);
+                    if (DatabaseManager.getCrashSound() == 1) {
+
+                        SoundManager.playSoundWithVolume("C:\\Users\\Asus\\Downloads\\sound-effects-20260621T162013Z-3-001\\sound-effects\\mixkit-epic-impact-afar-explosion-2782.wav", -12.0f);
+                    }
 
                     cell.hit();
 
@@ -508,6 +536,7 @@ public class GamePanel extends JPanel implements KeyListener {
         }
 
         if ((allDead || cells.isEmpty()) && boss == null) {
+
             if (level == 1 || level == 2 || level == 3 || level == 5 || level == 6 || level == 7) {
 
                 score += 200;
@@ -568,13 +597,17 @@ public class GamePanel extends JPanel implements KeyListener {
         clearMovingObjects();
 
         if (level == 9) {
-
+            SoundManager.stopBackgroundMusic();
             gameOver = true;
             gameOverLabel.setText("YOU WIN");
             gameOverLabel.setVisible(true);
+
             DatabaseManager.saveScore(score, level);
 
-            SoundManager.playSoundWithVolume("C:\\Users\\Asus\\Downloads\\sound-effects-20260621T162013Z-3-001\\sound-effects\\mixkit-retro-arcade-game-over-470.wav", 6.0f);
+            if (DatabaseManager.getGameOverSound() == 1) {
+
+                SoundManager.playSoundWithVolume("C:\\Users\\Asus\\Downloads\\sound-effects-20260621T162013Z-3-001\\sound-effects\\mixkit-retro-arcade-game-over-470.wav", 6.0f);
+            }
         }
 
         else {
@@ -747,6 +780,7 @@ public class GamePanel extends JPanel implements KeyListener {
 
             // HIT PLAYER
             if (egg.hitPlane(plane)) {
+
                 backgroundLabel.remove(egg);
                 eggs.remove(i--);
 
@@ -808,7 +842,6 @@ public class GamePanel extends JPanel implements KeyListener {
         messageTimer.start();
     }
 
-
     //----------------------------------------------------------------
     //Lose life
     public void loseLife() {
@@ -819,16 +852,26 @@ public class GamePanel extends JPanel implements KeyListener {
             livesLabel.setText("Lives: " + lives);
 
             if (lives == 0) {
-                SoundManager.playSoundWithVolume("C:\\Users\\Asus\\Downloads\\sound-effects-20260621T162013Z-3-001\\sound-effects\\mixkit-retro-arcade-game-over-470.wav", 6.0f);
+                SoundManager.stopBackgroundMusic();
+
+                if (DatabaseManager.getGameOverSound() == 1) {
+
+                    SoundManager.playSoundWithVolume("C:\\Users\\Asus\\Downloads\\sound-effects-20260621T162013Z-3-001\\sound-effects\\mixkit-retro-arcade-game-over-470.wav", 6.0f);
+                }
 
                 gameOver = true;
                 gameOverLabel.setText("GAME OVER");
                 gameOverLabel.setVisible(true);
+
                 DatabaseManager.saveScore(score, level);
             }
 
             else {
-                SoundManager.playSoundWithVolume("C:\\Users\\Asus\\Downloads\\sound-effects-20260621T162013Z-3-001\\sound-effects\\mixkit-epic-impact-afar-explosion-2782.wav", -12.0f);
+
+                if (DatabaseManager.getCrashSound() == 1) {
+
+                    SoundManager.playSoundWithVolume("C:\\Users\\Asus\\Downloads\\sound-effects-20260621T162013Z-3-001\\sound-effects\\mixkit-epic-impact-afar-explosion-2782.wav", -12.0f);
+                }
             }
         }
     }
@@ -863,7 +906,10 @@ public class GamePanel extends JPanel implements KeyListener {
                     bullets.add(bullet);
                     backgroundLabel.add(bullet);
 
-                    SoundManager.playSound("C:\\Users\\Asus\\Downloads\\sound-effects-20260621T162013Z-3-001\\sound-effects\\mixkit-short-laser-gun-shot-1670.wav");
+                    if (DatabaseManager.getShotSound() == 1) {
+
+                        SoundManager.playSound("C:\\Users\\Asus\\Downloads\\sound-effects-20260621T162013Z-3-001\\sound-effects\\mixkit-short-laser-gun-shot-1670.wav");
+                    }
 
                     lastBulletShotTime = now;
                 }
@@ -876,6 +922,7 @@ public class GamePanel extends JPanel implements KeyListener {
         }
 
         if (e.getKeyCode() == KeyEvent.VK_ESCAPE) {
+            SoundManager.stopBackgroundMusic();
             gameMain.showMainMenu();
         }
     }
