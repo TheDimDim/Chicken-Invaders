@@ -53,6 +53,9 @@ public class GamePanel extends JPanel implements KeyListener {
     private int lives;
     private JLabel livesLabel;
 
+
+    private JLabel usernameLabel;
+
     private int level;
     private JLabel levelLabel;
 
@@ -129,6 +132,11 @@ public class GamePanel extends JPanel implements KeyListener {
         levelLabel.setForeground(Color.WHITE);
         levelLabel.setBounds(650, 0, 120, 40);
         backgroundLabel.add(levelLabel);
+
+        usernameLabel = new JLabel("User: " + DatabaseManager.getCurrentUsername());
+        usernameLabel.setForeground(Color.WHITE);
+        usernameLabel.setBounds(50, 90, 250, 40);
+        backgroundLabel.add(usernameLabel);
 
         //Pause
         paused = false;
