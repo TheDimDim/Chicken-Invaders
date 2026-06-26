@@ -76,4 +76,28 @@ public class SoundManager {
             backgroundClip = null;
         }
     }
+
+    public static void playShotSound(String path) {
+
+        try {
+
+            File file = new File(path);
+
+            if (!file.exists()) {
+
+                System.out.println("Shot sound file not found");
+                return;
+            }
+
+            AudioInputStream audioInputStream = AudioSystem.getAudioInputStream(file);
+
+            Clip clip = AudioSystem.getClip();
+            clip.open(audioInputStream);
+            clip.start();
+
+        } catch (Exception e) {
+
+            System.out.println("Shot sound error: " + e.getMessage());
+        }
+    }
 }

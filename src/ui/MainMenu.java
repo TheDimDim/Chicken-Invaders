@@ -37,10 +37,20 @@ public class MainMenu extends JPanel {
         backgroundLabel.add(titleLabel);
 
         //----------------------------------------------------------------
+        //High score
 
         JButton highScoresButton = new JButton("High Scores");
         highScoresButton.setBounds(300, 220, 200, 40);
         backgroundLabel.add(highScoresButton);
+
+        highScoresButton.addActionListener(new ActionListener() {
+
+            @Override
+            public void actionPerformed(ActionEvent e) {
+
+                gameMain.showHighScorePanel();
+            }
+        });
         //----------------------------------------------------------------
         //Setting button
 
