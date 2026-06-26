@@ -2,10 +2,7 @@ package game;
 
 import managers.DatabaseManager;
 import managers.SoundManager;
-import model.Bullet;
-import model.Egg;
-import model.Explosion;
-import model.Plane;
+import model.*;
 import model.boss.Boss;
 import model.boss.BossLevel4;
 import model.boss.BossLevel8;
@@ -46,6 +43,16 @@ public class GamePanel extends JPanel implements KeyListener {
     private long lastEggDropTime;
     private long lastBossEggTime;
 
+
+    //POWER UP
+    private ArrayList<PowerUp> powerUps;
+    private int fireCount;
+    private boolean shieldActive;
+    private boolean freezeActive;
+    private long rapidFireEndTime;
+    private long shieldEndTime;
+    private long freezeEndTime;
+
     private int score;
     private JLabel scoreLabel;
     private JLabel messageLabel;
@@ -64,8 +71,8 @@ public class GamePanel extends JPanel implements KeyListener {
 
     private JLabel fireLabel;
 
-    private int rows = 4;
-    private int cols = 4;
+    private int rows = 5;
+    private int cols = 8;
 
     //----------------------------------------------------------------
 
@@ -90,6 +97,16 @@ public class GamePanel extends JPanel implements KeyListener {
         enemyBullets = new ArrayList<>();
         bullets = new ArrayList<>();
         cells = new ArrayList<>();
+
+        powerUps = new ArrayList<>();
+
+        fireCount = 1;
+        shieldActive = false;
+        freezeActive = false;
+
+        rapidFireEndTime = 0;
+        shieldEndTime = 0;
+        freezeEndTime = 0;
 
         ImageIcon background = new ImageIcon("C:\\Users\\Asus\\Downloads\\background.jpg");
         Image backgroundImage = background.getImage().getScaledInstance(800, 600, Image.SCALE_SMOOTH);
@@ -118,7 +135,7 @@ public class GamePanel extends JPanel implements KeyListener {
         backgroundLabel.add(scoreLabel);
 
         //Lives
-        lives = 40;
+        lives = 3;
         livesLabel = new JLabel("Lives: 3");
         livesLabel.setForeground(Color.WHITE);
         livesLabel.setBounds(50, 0, 200, 40);
@@ -198,6 +215,8 @@ public class GamePanel extends JPanel implements KeyListener {
                     moveEggs();
                     moveEnemyBullets();
                     shooterEnemiesShoot();
+                    movePowerUps();
+                    checkPowerUpTimes();
                 }
             }
         });
@@ -416,9 +435,13 @@ public class GamePanel extends JPanel implements KeyListener {
                         score += cell.getEnemy().getScore();
                         scoreLabel.setText("Score: " + score);
 
+                        createPowerUp(cell.getEnemy().getXPosition(), cell.getEnemy().getYPosition());
+
                         backgroundLabel.remove(cell.getEnemy());
                         cells.remove(j);
                     }
+
+
 
                     break;
                 }
@@ -440,6 +463,10 @@ public class GamePanel extends JPanel implements KeyListener {
     //----------------------------------------------------------------
     //ENEMY
     public void moveEnemies() {
+        if (freezeActive) {
+
+            return;
+        }
 
         if (boss != null) {
             return;
@@ -598,6 +625,7 @@ public class GamePanel extends JPanel implements KeyListener {
 
         if (level == 9) {
             SoundManager.stopBackgroundMusic();
+            DatabaseManager.saveGameRecord(score, 8);
             gameOver = true;
             gameOverLabel.setText("YOU WIN");
             gameOverLabel.setVisible(true);
@@ -640,6 +668,10 @@ public class GamePanel extends JPanel implements KeyListener {
     //----------------------------------------------------------------
     //Shooter enemy
     public void shooterEnemiesShoot() {
+        if (freezeActive) {
+
+            return;
+        }
 
         if (boss != null) {
             return;
@@ -666,6 +698,10 @@ public class GamePanel extends JPanel implements KeyListener {
     //----------------------------------------------------------------
     //Enemy bullets
     public void moveEnemyBullets() {
+        if (freezeActive) {
+
+            return;
+        }
 
         for (int i = 0; i < enemyBullets.size(); i++) {
 
@@ -678,7 +714,15 @@ public class GamePanel extends JPanel implements KeyListener {
                 backgroundLabel.remove(b);
                 enemyBullets.remove(i--);
 
-                loseLife();
+                if (!shieldActive) {
+
+                    loseLife();
+                }
+
+                else {
+
+                    showMessage("SHIELD");
+                }
             }
 
             else if (b.getY() > 600) {
@@ -690,10 +734,14 @@ public class GamePanel extends JPanel implements KeyListener {
 
         backgroundLabel.repaint();
     }
-
     //----------------------------------------------------------------
     // Drop Egg
     private void dropEgg() {
+
+        if (freezeActive) {
+
+            return;
+        }
 
         long currentTime = System.currentTimeMillis();
 
@@ -769,6 +817,10 @@ public class GamePanel extends JPanel implements KeyListener {
     //----------------------------------------------------------------
     // Eggs Movement
     public void moveEggs() {
+        if (freezeActive) {
+
+            return;
+        }
 
         for (int i = 0; i < eggs.size(); i++) {
 
@@ -779,14 +831,23 @@ public class GamePanel extends JPanel implements KeyListener {
             boolean removed = false;
 
             // HIT PLAYER
+
             if (egg.hitPlane(plane)) {
 
                 backgroundLabel.remove(egg);
                 eggs.remove(i--);
 
-                loseLife();
-                removed = true;
+                if (!shieldActive) {
+
+                    loseLife();
+                }
+
+                else {
+
+                    showMessage("SHIELD");
+                }
             }
+
 
             // OUT OF SCREEN
             if (!removed && egg.isOutOfScreen()) {
@@ -853,6 +914,7 @@ public class GamePanel extends JPanel implements KeyListener {
 
             if (lives == 0) {
                 SoundManager.stopBackgroundMusic();
+                DatabaseManager.saveGameRecord(score, level);
 
                 if (DatabaseManager.getGameOverSound() == 1) {
 
@@ -899,21 +961,38 @@ public class GamePanel extends JPanel implements KeyListener {
 
                 long now = System.currentTimeMillis();
 
-                if (now - lastBulletShotTime >= 300) {
+                int shootDelay = 300;
 
-                    Bullet bullet = new Bullet(plane.getXPosition() + 28, plane.getYPosition());
+                if (now < rapidFireEndTime) {
 
-                    bullets.add(bullet);
-                    backgroundLabel.add(bullet);
+                    shootDelay = 100;
+                }
+
+                if (now - lastBulletShotTime >= shootDelay) {
+
+                    int startX = plane.getXPosition() + 28;
+                    int startY = plane.getYPosition();
+
+                    for (int i = 0; i < fireCount; i++) {
+
+                        int bulletX = startX + (i * 12) - ((fireCount - 1) * 6);
+
+                        Bullet bullet = new Bullet(bulletX, startY);
+
+                        bullets.add(bullet);
+                        backgroundLabel.add(bullet);
+                    }
 
                     if (DatabaseManager.getShotSound() == 1) {
 
-                        SoundManager.playSound("C:\\Users\\Asus\\Downloads\\sound-effects-20260621T162013Z-3-001\\sound-effects\\mixkit-short-laser-gun-shot-1670.wav");
+                        SoundManager.playShotSound("C:\\Users\\Asus\\Downloads\\sound-effects-20260621T162013Z-3-001\\sound-effects\\mixkit-short-laser-gun-shot-1670.wav");
+
                     }
 
                     lastBulletShotTime = now;
                 }
             }
+
         }
 
         if (e.getKeyCode() == KeyEvent.VK_P) {
@@ -926,6 +1005,155 @@ public class GamePanel extends JPanel implements KeyListener {
             gameMain.showMainMenu();
         }
     }
+
+    //----------------------------------------------------------------
+    //POWER UP
+    private void createPowerUp(int x, int y) {
+
+        int chance = (int)(Math.random() * 100);
+
+        if (chance < 20) {
+
+            String type = randomPowerUpType();
+
+            PowerUp powerUp = new PowerUp(x, y, type);
+
+            powerUps.add(powerUp);
+            backgroundLabel.add(powerUp);
+
+            backgroundLabel.revalidate();
+            backgroundLabel.repaint();
+        }
+    }
+
+    private String randomPowerUpType() {
+
+        int random = (int)(Math.random() * 5);
+
+        if (random == 0) {
+            return "RAPID_FIRE";
+        }
+
+        else if (random == 1) {
+            return "FREEZE";
+        }
+
+        else if (random == 2) {
+            return "EXTRA_LIFE";
+        }
+
+        else if (random == 3) {
+            return "SHIELD";
+        }
+
+        else {
+            return "ADD_FIRE";
+        }
+    }
+
+    private void movePowerUps() {
+
+        for (int i = 0; i < powerUps.size(); i++) {
+
+            PowerUp powerUp = powerUps.get(i);
+
+            powerUp.movement();
+
+            if (powerUp.hitPlane(plane)) {
+
+                applyPowerUp(powerUp.getType());
+
+                backgroundLabel.remove(powerUp);
+                powerUps.remove(i--);
+            }
+
+            else if (powerUp.isOutOfScreen()) {
+
+                backgroundLabel.remove(powerUp);
+                powerUps.remove(i--);
+            }
+        }
+
+        backgroundLabel.repaint();
+    }
+
+    private void applyPowerUp(String type) {
+
+        if (type.equals("RAPID_FIRE")) {
+
+            rapidFireEndTime = System.currentTimeMillis() + 8000;
+            showMessage("RAPID FIRE");
+        }
+
+        else if (type.equals("FREEZE")) {
+
+            freezeActive = true;
+            freezeEndTime = System.currentTimeMillis() + 3000;
+            showMessage("FREEZE");
+        }
+
+        else if (type.equals("EXTRA_LIFE")) {
+
+            if (lives < 5) {
+
+                lives++;
+                livesLabel.setText("Lives: " + lives);
+            }
+
+            showMessage("EXTRA LIFE");
+        }
+
+        else if (type.equals("SHIELD")) {
+
+            shieldActive = true;
+            shieldEndTime = System.currentTimeMillis() + 10000;
+            showMessage("SHIELD");
+        }
+
+        else if (type.equals("ADD_FIRE")) {
+
+            if (fireCount < 5) {
+
+                fireCount++;
+                fireLabel.setText("Fire: " + fireCount);
+                showMessage("ADD FIRE");
+            }
+
+            else {
+
+                showMessage("MAX FIRE");
+            }
+        }
+
+    }
+
+    private void checkPowerUpTimes() {
+
+        long now = System.currentTimeMillis();
+
+        if (shieldActive) {
+
+            livesLabel.setForeground(Color.CYAN);
+        }
+
+        else {
+
+            livesLabel.setForeground(Color.WHITE);
+        }
+
+        if (shieldActive && now > shieldEndTime) {
+
+            shieldActive = false;
+            livesLabel.setForeground(Color.WHITE);
+        }
+
+        if (freezeActive && now > freezeEndTime) {
+
+            freezeActive = false;
+        }
+    }
+
+
 
     @Override public void keyReleased(KeyEvent e) {}
     @Override public void keyTyped(KeyEvent e) {}

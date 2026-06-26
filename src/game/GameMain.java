@@ -1,9 +1,6 @@
 package game;
 
-import ui.LoginPanel;
-import ui.MainMenu;
-import ui.RegisterPanel;
-import ui.SettingsPanel;
+import ui.*;
 
 import javax.swing.*;
 import java.awt.*;
@@ -66,6 +63,17 @@ public class GameMain extends JFrame {
     public void showRegisterPanel() {
 
         setContentPane(new RegisterPanel(this));
+
+        revalidate();
+        repaint();
+    }
+
+
+    //----------------------------------------------------------------
+
+    public void showHighScorePanel() {
+
+        setContentPane(new HighScorePanel(this));
 
         revalidate();
         repaint();
