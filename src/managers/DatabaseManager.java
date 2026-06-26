@@ -192,6 +192,88 @@ public class DatabaseManager {
         }
     }
 
+    public static void saveGameRecord(int score, int level) {
+
+        if (currentUsername == null) {
+
+            return;
+        }
+
+        try {
+
+            Class.forName("org.sqlite.JDBC");
+
+            Connection connection = DriverManager.getConnection(DB_URL);
+
+            String sql = "INSERT INTO game_records(username, score, level, background_music, shot_sound, crash_sound, game_over_sound) VALUES('" +
+                    currentUsername + "', " +
+                    score + ", " +
+                    level + ", " +
+                    getBackgroundMusic() + ", " +
+                    getShotSound() + ", " +
+                    getCrashSound() + ", " +
+                    getGameOverSound() +
+                    ")";
+
+            Statement statement = connection.createStatement();
+            statement.executeUpdate(sql);
+
+            statement.close();
+            connection.close();
+
+        } catch (Exception e) {
+
+            System.out.println("Save game record error: " + e.getMessage());
+        }
+    }
+
+    public static String getHighScoresText() {
+
+        String text = "";
+
+        try {
+
+            Class.forName("org.sqlite.JDBC");
+
+            Connection connection = DriverManager.getConnection(DB_URL);
+
+            String sql = "SELECT username, MAX(score) AS best_score, level, played_at " +
+                    "FROM game_records " +
+                    "GROUP BY username " +
+                    "ORDER BY best_score DESC";
+
+            Statement statement = connection.createStatement();
+            ResultSet resultSet = statement.executeQuery(sql);
+
+            while (resultSet.next()) {
+
+                text += "Username: " + resultSet.getString("username") + "\n";
+                text += "Score: " + resultSet.getInt("best_score") + "\n";
+                text += "Level: " + resultSet.getInt("level") + "\n";
+                text += "Date: " + resultSet.getString("played_at") + "\n";
+                text += "----------------------\n";
+            }
+
+            resultSet.close();
+            statement.close();
+            connection.close();
+
+        } catch (Exception e) {
+
+            System.out.println("High scores error: " + e.getMessage());
+        }
+
+        if (text.equals("")) {
+
+            text = "No scores yet";
+        }
+
+        return text;
+    }
+
+
+
+
 
 
 }
