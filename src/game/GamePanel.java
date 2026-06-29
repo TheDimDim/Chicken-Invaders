@@ -22,6 +22,13 @@ public class GamePanel extends JPanel implements KeyListener {
     private JLabel backgroundLabel;
     private Timer timer;
 
+    //KEYS
+    private boolean rightPressed;
+    private boolean leftPressed;
+    private boolean upPressed;
+    private boolean downPressed;
+    private boolean spacePressed;
+
     //BULLET
     private long lastBulletShotTime;
     private ArrayList<Bullet> bullets;
@@ -34,6 +41,7 @@ public class GamePanel extends JPanel implements KeyListener {
     private double enemyMoveCounter;
     private int verticalStep;
     private int eggDropInterval;
+    private boolean edgeHandled;
 
     //BOSS
     private Boss boss;
@@ -90,12 +98,19 @@ public class GamePanel extends JPanel implements KeyListener {
         lastEggDropTime = 0;
         lastBossEggTime = 0;
 
+        rightPressed = false;
+        leftPressed = false;
+        upPressed = false;
+        downPressed = false;
+        spacePressed = false;
+
         level = 1;
         enemyDirection = 1;
         enemySpeed = 1;
         enemyMoveCounter = 0;
         verticalStep = 20;
         eggDropInterval = 3000;
+        edgeHandled = false;
 
         eggs = new ArrayList<>();
         enemyBullets = new ArrayList<>();
@@ -221,7 +236,7 @@ public class GamePanel extends JPanel implements KeyListener {
             public void actionPerformed(ActionEvent e) {
 
                 if (!paused && !gameOver) {
-
+                    handleKeys();
                     moveBullets();
                     moveEnemies();
                     moveBoss();
@@ -558,13 +573,21 @@ public class GamePanel extends JPanel implements KeyListener {
             if (cells.get(i).getEnemy().hitEdge())
                 hitEdge = true;
         }
-
-        if (hitEdge) {
+        if (hitEdge && !edgeHandled) {
 
             enemyDirection *= -1;
 
-            for (Cell cell : cells)
+            for (Cell cell : cells) {
+
                 cell.getEnemy().moveVertical(verticalStep);
+            }
+
+            edgeHandled = true;
+        }
+
+        else if (!hitEdge) {
+
+            edgeHandled = false;
         }
 
         boolean allDead = true;
@@ -594,6 +617,10 @@ public class GamePanel extends JPanel implements KeyListener {
             plane.resetPosition();
 
             clearMovingObjects();
+
+            edgeHandled = false;
+            enemyDirection = 1;
+            enemyMoveCounter = 0;
 
             if (level == 4) {
 
@@ -953,60 +980,94 @@ public class GamePanel extends JPanel implements KeyListener {
     }
 
     //----------------------------------------------------------------
+    //Handle keys
+
+    private void handleKeys() {
+
+        if (rightPressed) {
+            plane.moveRight();
+        }
+
+        if (leftPressed) {
+            plane.moveLeft();
+        }
+
+        if (upPressed) {
+            plane.moveUp();
+        }
+
+        if (downPressed) {
+            plane.moveDown();
+        }
+
+        if (spacePressed) {
+
+            shootBullet();
+        }
+    }
+
+//----------------------------------------------------------------
+//Shoot bullet
+
+    private void shootBullet() {
+
+        long now = System.currentTimeMillis();
+
+        int shootDelay = 300;
+
+        if (now < rapidFireEndTime) {
+
+            shootDelay = 200;
+        }
+
+        if (now - lastBulletShotTime >= shootDelay) {
+
+            int startX = plane.getXPosition() + 28;
+            int startY = plane.getYPosition();
+
+            for (int i = 0; i < fireCount; i++) {
+
+                int bulletX = startX + (i * 12) - ((fireCount - 1) * 6);
+
+                Bullet bullet = new Bullet(bulletX, startY);
+
+                bullets.add(bullet);
+                backgroundLabel.add(bullet);
+            }
+
+            if (DatabaseManager.getShotSound() == 1) {
+
+                SoundManager.playShotSound("C:\\Users\\Asus\\Downloads\\sound-effects-20260621T162013Z-3-001\\sound-effects\\mixkit-short-laser-gun-shot-1670.wav");
+            }
+
+            lastBulletShotTime = now;
+        }
+    }
+
+    //----------------------------------------------------------------
+
     //KEYBOARD
     @Override
     public void keyPressed(KeyEvent e) {
 
-        if (!paused && !gameOver) {
+        if (e.getKeyCode() == KeyEvent.VK_RIGHT || e.getKeyCode() == KeyEvent.VK_D) {
+            rightPressed = true;
+        }
 
-            if (e.getKeyCode() == KeyEvent.VK_RIGHT || e.getKeyCode() == KeyEvent.VK_D)
-                plane.moveRight();
+        if (e.getKeyCode() == KeyEvent.VK_LEFT || e.getKeyCode() == KeyEvent.VK_A) {
+            leftPressed = true;
+        }
 
-            if (e.getKeyCode() == KeyEvent.VK_LEFT || e.getKeyCode() == KeyEvent.VK_A)
-                plane.moveLeft();
+        if (e.getKeyCode() == KeyEvent.VK_UP || e.getKeyCode() == KeyEvent.VK_W) {
+            upPressed = true;
+        }
 
-            if (e.getKeyCode() == KeyEvent.VK_UP || e.getKeyCode() == KeyEvent.VK_W)
-                plane.moveUp();
+        if (e.getKeyCode() == KeyEvent.VK_DOWN || e.getKeyCode() == KeyEvent.VK_S) {
+            downPressed = true;
+        }
 
-            if (e.getKeyCode() == KeyEvent.VK_DOWN || e.getKeyCode() == KeyEvent.VK_S)
-                plane.moveDown();
-
-            if (e.getKeyCode() == KeyEvent.VK_SPACE) {
-
-                long now = System.currentTimeMillis();
-
-                int shootDelay = 300;
-
-                if (now < rapidFireEndTime) {
-
-                    shootDelay = 100;
-                }
-
-                if (now - lastBulletShotTime >= shootDelay) {
-
-                    int startX = plane.getXPosition() + 28;
-                    int startY = plane.getYPosition();
-
-                    for (int i = 0; i < fireCount; i++) {
-
-                        int bulletX = startX + (i * 12) - ((fireCount - 1) * 6);
-
-                        Bullet bullet = new Bullet(bulletX, startY);
-
-                        bullets.add(bullet);
-                        backgroundLabel.add(bullet);
-                    }
-
-                    if (DatabaseManager.getShotSound() == 1) {
-
-                        SoundManager.playShotSound("C:\\Users\\Asus\\Downloads\\sound-effects-20260621T162013Z-3-001\\sound-effects\\mixkit-short-laser-gun-shot-1670.wav");
-
-                    }
-
-                    lastBulletShotTime = now;
-                }
-            }
-
+        if (e.getKeyCode() == KeyEvent.VK_SPACE) {
+            spacePressed = true;
         }
 
         if (e.getKeyCode() == KeyEvent.VK_P) {
@@ -1175,9 +1236,29 @@ public class GamePanel extends JPanel implements KeyListener {
         }
     }
 
+    @Override
+    public void keyReleased(KeyEvent e) {
 
+        if (e.getKeyCode() == KeyEvent.VK_RIGHT || e.getKeyCode() == KeyEvent.VK_D) {
+            rightPressed = false;
+        }
 
+        if (e.getKeyCode() == KeyEvent.VK_LEFT || e.getKeyCode() == KeyEvent.VK_A) {
+            leftPressed = false;
+        }
 
-    @Override public void keyReleased(KeyEvent e) {}
+        if (e.getKeyCode() == KeyEvent.VK_UP || e.getKeyCode() == KeyEvent.VK_W) {
+            upPressed = false;
+        }
+
+        if (e.getKeyCode() == KeyEvent.VK_DOWN || e.getKeyCode() == KeyEvent.VK_S) {
+            downPressed = false;
+        }
+
+        if (e.getKeyCode() == KeyEvent.VK_SPACE) {
+            spacePressed = false;
+        }
+    }
+
     @Override public void keyTyped(KeyEvent e) {}
 }
