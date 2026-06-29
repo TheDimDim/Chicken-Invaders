@@ -31,6 +31,7 @@ public class GamePanel extends JPanel implements KeyListener {
 
     //BULLET
     private long lastBulletShotTime;
+    private long lastShotSoundTime;
     private ArrayList<Bullet> bullets;
 
     //ENEMY
@@ -51,7 +52,6 @@ public class GamePanel extends JPanel implements KeyListener {
     private long lastEggDropTime;
     private long lastBossEggTime;
 
-
     //POWER UP
     private ArrayList<PowerUp> powerUps;
     private int fireCount;
@@ -67,7 +67,6 @@ public class GamePanel extends JPanel implements KeyListener {
 
     private int lives;
     private JLabel livesLabel;
-
 
     private JLabel usernameLabel;
     private JLabel powerLabel;
@@ -95,6 +94,7 @@ public class GamePanel extends JPanel implements KeyListener {
         setLayout(null);
 
         lastBulletShotTime = 0;
+        lastShotSoundTime = 0;
         lastEggDropTime = 0;
         lastBossEggTime = 0;
 
@@ -146,48 +146,56 @@ public class GamePanel extends JPanel implements KeyListener {
             SoundManager.playBackgroundMusic("C:\\Users\\Asus\\Downloads\\background.wav");
         }
 
-        //Score
+        //HUD
         score = 0;
-        scoreLabel = new JLabel("Score: 0");
-        scoreLabel.setForeground(Color.WHITE);
-        scoreLabel.setBounds(50, 50, 200, 40);
-        backgroundLabel.add(scoreLabel);
-
-        //Lives
         lives = 3;
-        livesLabel = new JLabel("Lives: 3");
-        livesLabel.setForeground(Color.WHITE);
-        livesLabel.setBounds(50, 0, 200, 40);
-        backgroundLabel.add(livesLabel);
 
-        //Level
-        levelLabel = new JLabel("LEVEL: 1");
-        levelLabel.setForeground(Color.WHITE);
-        levelLabel.setBounds(650, 0, 120, 40);
-        backgroundLabel.add(levelLabel);
-
-        usernameLabel = new JLabel("User: " + DatabaseManager.getCurrentUsername());
-        usernameLabel.setForeground(Color.WHITE);
-        usernameLabel.setBounds(50, 90, 250, 40);
+        usernameLabel = new JLabel("👤 User: " + DatabaseManager.getCurrentUsername());
+        usernameLabel.setBounds(10, 8, 150, 35);
+        styleHudLabel(usernameLabel);
         backgroundLabel.add(usernameLabel);
 
-        powerLabel = new JLabel("Power: None");
-        powerLabel.setForeground(Color.WHITE);
-        powerLabel.setBounds(650, 120, 140, 40);
+        livesLabel = new JLabel("❤️ Lives: " + lives);
+        livesLabel.setBounds(155, 8, 100, 35);
+        styleHudLabel(livesLabel);
+        backgroundLabel.add(livesLabel);
+
+        levelLabel = new JLabel("⭐ Level: " + level);
+        levelLabel.setBounds(250, 8, 105, 35);
+        styleHudLabel(levelLabel);
+        backgroundLabel.add(levelLabel);
+
+        scoreLabel = new JLabel("🏆 Score: " + score);
+        scoreLabel.setBounds(350, 8, 125, 35);
+        styleHudLabel(scoreLabel);
+        backgroundLabel.add(scoreLabel);
+
+        fireLabel = new JLabel("🔥 Fire: " + fireCount);
+        fireLabel.setBounds(470, 8, 95, 35);
+        styleHudLabel(fireLabel);
+        backgroundLabel.add(fireLabel);
+
+        powerLabel = new JLabel("⚡ Power: None");
+        powerLabel.setBounds(560, 8, 170, 35);
+        styleHudLabel(powerLabel);
         backgroundLabel.add(powerLabel);
 
         //Pause
         paused = false;
         pauseLabel = new JLabel("PAUSED");
-        pauseLabel.setForeground(Color.WHITE);
-        pauseLabel.setFont(new Font("Arial", Font.BOLD, 50));
-        pauseLabel.setBounds(290, 240, 250, 70);
+        pauseLabel.setBounds(150, 220, 500, 100);
+        styleCenterMessage(pauseLabel, 65);
         pauseLabel.setVisible(false);
         backgroundLabel.add(pauseLabel);
 
         //Back button
         JButton backButton = new JButton("Back");
-        backButton.setBounds(650, 80, 100, 30);
+        backButton.setBounds(670, 455, 100, 32);
+        backButton.setFont(new Font("Impact", Font.PLAIN, 16));
+        backButton.setForeground(new Color(235, 235, 255));
+        backButton.setBackground(new Color(35, 25, 70));
+        backButton.setFocusPainted(false);
+        backButton.setBorder(BorderFactory.createLineBorder(new Color(170, 130, 255), 2));
         backgroundLabel.add(backButton);
 
         backButton.addActionListener(new ActionListener() {
@@ -206,25 +214,18 @@ public class GamePanel extends JPanel implements KeyListener {
         //Game Over
         gameOver = false;
         gameOverLabel = new JLabel("GAME OVER");
-        gameOverLabel.setForeground(Color.WHITE);
-        gameOverLabel.setFont(new Font("Arial", Font.BOLD, 50));
-        gameOverLabel.setBounds(250, 240, 350, 70);
+        gameOverLabel.setBounds(100, 220, 600, 110);
+        styleCenterMessage(gameOverLabel, 75);
         gameOverLabel.setVisible(false);
         backgroundLabel.add(gameOverLabel);
 
         //level Message
         messageLabel = new JLabel("");
-        messageLabel.setForeground(Color.YELLOW);
-        messageLabel.setFont(new Font("Arial", Font.BOLD, 28));
-        messageLabel.setBounds(220, 180, 400, 60);
+        messageLabel.setBounds(100, 220, 600, 110);
+        styleCenterMessage(messageLabel, 75);
         messageLabel.setVisible(false);
         backgroundLabel.add(messageLabel);
 
-        //Fire
-        fireLabel = new JLabel("Fire: 1");
-        fireLabel.setForeground(Color.WHITE);
-        fireLabel.setBounds(650, 40, 120, 40);
-        backgroundLabel.add(fireLabel);
 
         setFocusable(true);
         addKeyListener(this);
@@ -251,6 +252,31 @@ public class GamePanel extends JPanel implements KeyListener {
         });
 
         timer.start();
+    }
+
+    //----------------------------------------------------------------
+
+    //Style hud label
+    private void styleHudLabel(JLabel label) {
+
+        label.setFont(new Font("Segoe UI Emoji", Font.BOLD, 14));
+        label.setForeground(Color.WHITE);
+        label.setHorizontalAlignment(SwingConstants.LEFT);
+        label.setVerticalAlignment(SwingConstants.CENTER);
+        label.setOpaque(false);
+        label.setBorder(null);
+    }
+
+    //----------------------------------------------------------------
+    //Style center message
+    private void styleCenterMessage(JLabel label, int fontSize) {
+
+        label.setFont(new Font("Impact", Font.BOLD, fontSize));
+        label.setForeground(Color.WHITE);
+        label.setHorizontalAlignment(SwingConstants.CENTER);
+        label.setVerticalAlignment(SwingConstants.CENTER);
+        label.setOpaque(false);
+        label.setBorder(null);
     }
 
     //----------------------------------------------------------------
@@ -431,7 +457,9 @@ public class GamePanel extends JPanel implements KeyListener {
                 if (boss.isDead()) {
 
                     score += boss.getScore();
-                    scoreLabel.setText("Score: " + score);
+                    scoreLabel.setText("🏆 Score: " + score);
+
+                    showExplosion(boss.getX(), boss.getY());
 
                     backgroundLabel.remove(boss);
                     boss = null;
@@ -462,15 +490,15 @@ public class GamePanel extends JPanel implements KeyListener {
                     if (cell.isDestroyed()) {
 
                         score += cell.getEnemy().getScore();
-                        scoreLabel.setText("Score: " + score);
+                        scoreLabel.setText("🏆 Score: " + score);
+
+                        showExplosion(cell.getEnemy().getXPosition(), cell.getEnemy().getYPosition());
 
                         createPowerUp(cell.getEnemy().getXPosition(), cell.getEnemy().getYPosition());
 
                         backgroundLabel.remove(cell.getEnemy());
                         cells.remove(j);
                     }
-
-
 
                     break;
                 }
@@ -573,6 +601,7 @@ public class GamePanel extends JPanel implements KeyListener {
             if (cells.get(i).getEnemy().hitEdge())
                 hitEdge = true;
         }
+
         if (hitEdge && !edgeHandled) {
 
             enemyDirection *= -1;
@@ -604,13 +633,14 @@ public class GamePanel extends JPanel implements KeyListener {
             if (level == 1 || level == 2 || level == 3 || level == 5 || level == 6 || level == 7) {
 
                 score += 200;
-                scoreLabel.setText("Score: " + score);
-                showMessage("LEVEL COMPLETE +200");
+                scoreLabel.setText("🏆 Score: " + score);
             }
 
             level++;
 
-            levelLabel.setText("LEVEL: " + level);
+            levelLabel.setText("⭐ Level: " + level);
+
+            showMessage("LEVEL " + level);
 
             updateLevelSettings();
 
@@ -656,7 +686,7 @@ public class GamePanel extends JPanel implements KeyListener {
 
         level++;
 
-        levelLabel.setText("LEVEL: " + level);
+        levelLabel.setText("⭐ Level: " + level);
 
         updateLevelSettings();
 
@@ -669,6 +699,7 @@ public class GamePanel extends JPanel implements KeyListener {
             DatabaseManager.saveGameRecord(score, 8);
             gameOver = true;
             gameOverLabel.setText("YOU WIN");
+            gameOverLabel.setForeground(Color.WHITE);
             gameOverLabel.setVisible(true);
 
             DatabaseManager.saveScore(score, level);
@@ -680,6 +711,7 @@ public class GamePanel extends JPanel implements KeyListener {
         }
 
         else {
+            showMessage("LEVEL " + level);
             grid();
         }
 
@@ -749,8 +781,9 @@ public class GamePanel extends JPanel implements KeyListener {
             Bullet b = enemyBullets.get(i);
 
             b.enemyMovement();
-
             if (b.hitPlane(plane)) {
+
+                showExplosion(plane.getXPosition(), plane.getYPosition());
 
                 backgroundLabel.remove(b);
                 enemyBullets.remove(i--);
@@ -775,6 +808,7 @@ public class GamePanel extends JPanel implements KeyListener {
 
         backgroundLabel.repaint();
     }
+
     //----------------------------------------------------------------
     // Drop Egg
     private void dropEgg() {
@@ -872,11 +906,14 @@ public class GamePanel extends JPanel implements KeyListener {
             boolean removed = false;
 
             // HIT PLAYER
-
             if (egg.hitPlane(plane)) {
+
+                showExplosion(plane.getXPosition(), plane.getYPosition());
 
                 backgroundLabel.remove(egg);
                 eggs.remove(i--);
+
+                removed = true;
 
                 if (!shieldActive) {
 
@@ -888,7 +925,6 @@ public class GamePanel extends JPanel implements KeyListener {
                     showMessage("SHIELD");
                 }
             }
-
 
             // OUT OF SCREEN
             if (!removed && egg.isOutOfScreen()) {
@@ -925,13 +961,18 @@ public class GamePanel extends JPanel implements KeyListener {
     }
 
     //----------------------------------------------------------------
-    // Message
+
+    //----------------------------------------------------------------
+// Message
     private void showMessage(String text) {
 
         messageLabel.setText(text);
         messageLabel.setVisible(true);
 
-        Timer messageTimer = new Timer(1000, new ActionListener() {
+        backgroundLabel.setComponentZOrder(messageLabel, 0);
+        backgroundLabel.repaint();
+
+        Timer messageTimer = new Timer(1200, new ActionListener() {
 
             @Override
             public void actionPerformed(ActionEvent e) {
@@ -944,6 +985,7 @@ public class GamePanel extends JPanel implements KeyListener {
         messageTimer.start();
     }
 
+
     //----------------------------------------------------------------
     //Lose life
     public void loseLife() {
@@ -951,7 +993,7 @@ public class GamePanel extends JPanel implements KeyListener {
         if (lives > 0) {
 
             lives--;
-            livesLabel.setText("Lives: " + lives);
+            livesLabel.setText("❤️ Lives: " + lives);
 
             if (lives == 0) {
                 SoundManager.stopBackgroundMusic();
@@ -964,6 +1006,7 @@ public class GamePanel extends JPanel implements KeyListener {
 
                 gameOver = true;
                 gameOverLabel.setText("GAME OVER");
+                gameOverLabel.setForeground(Color.WHITE);
                 gameOverLabel.setVisible(true);
 
                 DatabaseManager.saveScore(score, level);
@@ -981,7 +1024,6 @@ public class GamePanel extends JPanel implements KeyListener {
 
     //----------------------------------------------------------------
     //Handle keys
-
     private void handleKeys() {
 
         if (rightPressed) {
@@ -1006,9 +1048,8 @@ public class GamePanel extends JPanel implements KeyListener {
         }
     }
 
-//----------------------------------------------------------------
-//Shoot bullet
-
+    //----------------------------------------------------------------
+    //Shoot bullet
     private void shootBullet() {
 
         long now = System.currentTimeMillis();
@@ -1037,7 +1078,12 @@ public class GamePanel extends JPanel implements KeyListener {
 
             if (DatabaseManager.getShotSound() == 1) {
 
-                SoundManager.playShotSound("C:\\Users\\Asus\\Downloads\\sound-effects-20260621T162013Z-3-001\\sound-effects\\mixkit-short-laser-gun-shot-1670.wav");
+                if (now - lastShotSoundTime >= 250) {
+
+                    SoundManager.playShotSound("C:\\Users\\Asus\\Downloads\\sound-effects-20260621T162013Z-3-001\\sound-effects\\mixkit-short-laser-gun-shot-1670.wav");
+
+                    lastShotSoundTime = now;
+                }
             }
 
             lastBulletShotTime = now;
@@ -1045,7 +1091,6 @@ public class GamePanel extends JPanel implements KeyListener {
     }
 
     //----------------------------------------------------------------
-
     //KEYBOARD
     @Override
     public void keyPressed(KeyEvent e) {
@@ -1073,6 +1118,8 @@ public class GamePanel extends JPanel implements KeyListener {
         if (e.getKeyCode() == KeyEvent.VK_P) {
             paused = !paused;
             pauseLabel.setVisible(paused);
+            backgroundLabel.setComponentZOrder(pauseLabel, 0);
+            backgroundLabel.repaint();
         }
 
         if (e.getKeyCode() == KeyEvent.VK_ESCAPE) {
@@ -1157,16 +1204,14 @@ public class GamePanel extends JPanel implements KeyListener {
         if (type.equals("RAPID_FIRE")) {
 
             rapidFireEndTime = System.currentTimeMillis() + 8000;
-            powerLabel.setText("Power: Rapid");
-            showMessage("RAPID FIRE");
+            powerLabel.setText("⚡ Power: Rapid");
         }
 
         else if (type.equals("FREEZE")) {
 
             freezeActive = true;
             freezeEndTime = System.currentTimeMillis() + 3000;
-            powerLabel.setText("Power: Freeze");
-            showMessage("FREEZE");
+            powerLabel.setText("❄️ Power: Freeze");
         }
 
         else if (type.equals("EXTRA_LIFE")) {
@@ -1174,18 +1219,15 @@ public class GamePanel extends JPanel implements KeyListener {
             if (lives < 5) {
 
                 lives++;
-                livesLabel.setText("Lives: " + lives);
+                livesLabel.setText("❤️ Lives: " + lives);
             }
-
-            showMessage("EXTRA LIFE");
         }
 
         else if (type.equals("SHIELD")) {
 
             shieldActive = true;
             shieldEndTime = System.currentTimeMillis() + 10000;
-            powerLabel.setText("Power: Shield");
-            showMessage("SHIELD");
+            powerLabel.setText("🛡 Power: Shield");
         }
 
         else if (type.equals("ADD_FIRE")) {
@@ -1193,8 +1235,7 @@ public class GamePanel extends JPanel implements KeyListener {
             if (fireCount < 5) {
 
                 fireCount++;
-                fireLabel.setText("Fire: " + fireCount);
-                showMessage("ADD FIRE");
+                fireLabel.setText("🔥 Fire: " + fireCount);
             }
 
             else {
@@ -1202,7 +1243,6 @@ public class GamePanel extends JPanel implements KeyListener {
                 showMessage("MAX FIRE");
             }
         }
-
     }
 
     private void checkPowerUpTimes() {
@@ -1232,7 +1272,7 @@ public class GamePanel extends JPanel implements KeyListener {
 
         if (now > rapidFireEndTime && !shieldActive && !freezeActive) {
 
-            powerLabel.setText("Power: None");
+            powerLabel.setText("⚡ Power: None");
         }
     }
 

@@ -8,8 +8,8 @@ public class PowerUp extends JLabel {
     //Fields
     private int x;
     private int y;
-    private int speed;
     private String type;
+    private int speed;
 
     //----------------------------------------------------------------
 
@@ -19,63 +19,86 @@ public class PowerUp extends JLabel {
         this.x = x;
         this.y = y;
         this.type = type;
-        this.speed = 2;
+        speed = 2;
 
-        if (type.equals("RAPID_FIRE")) {
+        setIcon(getPowerUpIcon());
 
-            setText("R");
-        }
-
-        else if (type.equals("FREEZE")) {
-
-            setText("F");
-        }
-
-        else if (type.equals("EXTRA_LIFE")) {
-
-            setText("L");
-        }
-
-        else if (type.equals("SHIELD")) {
-
-            setText("S");
-        }
-
-        else {
-
-            setText("+");
-        }
-
-        setHorizontalAlignment(SwingConstants.CENTER);
-        setForeground(Color.WHITE);
-        setFont(new Font("Arial", Font.BOLD, 22));
-        setOpaque(true);
-        setBackground(Color.MAGENTA);
-
-        setBounds(this.x, this.y, 35, 35);
+        setBounds(x, y, 45, 45);
     }
 
     //----------------------------------------------------------------
 
-    //Methods
+    //Get power up icon
+    private ImageIcon getPowerUpIcon() {
+
+        String path = "";
+
+        if (type.equals("RAPID_FIRE")) {
+
+            path = "C:\\Users\\Asus\\Downloads\\powerup2-20260626T142950Z-3-001\\powerup2\\fast_shot.png";
+        }
+
+        else if (type.equals("FREEZE")) {
+
+            path = "C:\\Users\\Asus\\Downloads\\powerup2-20260626T142950Z-3-001\\powerup2\\freeze.png";
+        }
+
+        else if (type.equals("EXTRA_LIFE")) {
+
+            path = "C:\\Users\\Asus\\Downloads\\powerup2-20260626T142950Z-3-001\\powerup2\\heal.png";
+        }
+
+        else if (type.equals("SHIELD")) {
+
+            path = "C:\\Users\\Asus\\Downloads\\powerup2-20260626T142950Z-3-001\\powerup2\\sheild.png";
+        }
+
+        else if (type.equals("ADD_FIRE")) {
+
+            path = "C:\\Users\\Asus\\Downloads\\powerup2-20260626T142950Z-3-001\\powerup2\\add_shot.png";
+        }
+
+        else {
+
+            path = "C:\\Users\\Asus\\Downloads\\powerup2-20260626T142950Z-3-001\\powerup2\\bomb.png";
+        }
+
+        ImageIcon icon = new ImageIcon(path);
+
+        Image image = icon.getImage().getScaledInstance(45, 45, Image.SCALE_SMOOTH);
+
+        return new ImageIcon(image);
+    }
+
+    //----------------------------------------------------------------
+
+    //Move
     public void movement() {
 
         y += speed;
-        setBounds(x, y, 35, 35);
+
+        setBounds(x, y, 45, 45);
     }
 
+    //----------------------------------------------------------------
+
+    //Hit plane
     public boolean hitPlane(Plane plane) {
 
         return getBounds().intersects(plane.getBounds());
     }
 
-    public boolean isOutOfScreen() {
+    //----------------------------------------------------------------
 
-        return y > 600;
-    }
-
+    //Get type
     public String getType() {
 
         return type;
+    }
+    //----------------------------------------------------------------
+    //Is out of screen
+    public boolean isOutOfScreen() {
+
+        return y > 600;
     }
 }
