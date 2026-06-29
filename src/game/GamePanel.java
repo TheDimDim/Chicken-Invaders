@@ -85,6 +85,10 @@ public class GamePanel extends JPanel implements KeyListener {
     private int rows = 5;
     private int cols = 8;
 
+    //STORE
+    private String selectedPlane;
+    private int shootDelay;
+
     //----------------------------------------------------------------
 
     //Constructor
@@ -127,6 +131,24 @@ public class GamePanel extends JPanel implements KeyListener {
         shieldEndTime = 0;
         freezeEndTime = 0;
 
+        selectedPlane = DatabaseManager.getSelectedPlane();
+        shootDelay = 300;
+
+        if (selectedPlane.equals("Fast")) {
+
+            shootDelay = 250;
+        }
+
+        else if (selectedPlane.equals("Heavy")) {
+
+            shootDelay = 200;
+        }
+
+        else if (selectedPlane.equals("Sniper")) {
+
+            shootDelay = 150;
+        }
+
         ImageIcon background = new ImageIcon("C:\\Users\\Asus\\Downloads\\background.jpg");
         Image backgroundImage = background.getImage().getScaledInstance(800, 600, Image.SCALE_SMOOTH);
 
@@ -148,7 +170,16 @@ public class GamePanel extends JPanel implements KeyListener {
 
         //HUD
         score = 0;
-        lives = 3;
+
+        if (selectedPlane.equals("Heavy")) {
+
+            lives = 5;
+        }
+
+        else {
+
+            lives = 3;
+        }
 
         usernameLabel = new JLabel("👤 User: " + DatabaseManager.getCurrentUsername());
         usernameLabel.setBounds(10, 8, 150, 35);
@@ -176,7 +207,7 @@ public class GamePanel extends JPanel implements KeyListener {
         backgroundLabel.add(fireLabel);
 
         powerLabel = new JLabel("⚡ Power: None");
-        powerLabel.setBounds(560, 8, 170, 35);
+        powerLabel.setBounds(560, 8, 160, 35);
         styleHudLabel(powerLabel);
         backgroundLabel.add(powerLabel);
 
@@ -190,12 +221,13 @@ public class GamePanel extends JPanel implements KeyListener {
 
         //Back button
         JButton backButton = new JButton("Back");
-        backButton.setBounds(670, 455, 100, 32);
+        backButton.setBounds(725, 8, 65, 35);
         backButton.setFont(new Font("Impact", Font.PLAIN, 16));
-        backButton.setForeground(new Color(235, 235, 255));
-        backButton.setBackground(new Color(35, 25, 70));
+        backButton.setForeground(Color.WHITE);
+        backButton.setOpaque(false);
+        backButton.setContentAreaFilled(false);
+        backButton.setBorderPainted(false);
         backButton.setFocusPainted(false);
-        backButton.setBorder(BorderFactory.createLineBorder(new Color(170, 130, 255), 2));
         backgroundLabel.add(backButton);
 
         backButton.addActionListener(new ActionListener() {
@@ -247,6 +279,8 @@ public class GamePanel extends JPanel implements KeyListener {
                     shooterEnemiesShoot();
                     movePowerUps();
                     checkPowerUpTimes();
+
+                    backgroundLabel.repaint();
                 }
             }
         });
@@ -424,8 +458,6 @@ public class GamePanel extends JPanel implements KeyListener {
         bulletsMovement();
         bulletsCollision();
         bulletsRemove();
-
-        backgroundLabel.repaint();
     }
 
     private void bulletsMovement() {
@@ -445,6 +477,11 @@ public class GamePanel extends JPanel implements KeyListener {
             if (boss != null && bullet.hitEnemy(boss)) {
 
                 boss.damageBoss();
+
+                if (selectedPlane.equals("Sniper")) {
+
+                    boss.damageBoss();
+                }
 
                 if (DatabaseManager.getCrashSound() == 1) {
 
@@ -533,8 +570,6 @@ public class GamePanel extends JPanel implements KeyListener {
         enemiesMovement();
         enemiesCollision();
         enemiesLevel();
-
-        backgroundLabel.repaint();
     }
 
     private void enemiesCleanup() {
@@ -795,7 +830,6 @@ public class GamePanel extends JPanel implements KeyListener {
 
                 else {
 
-                    showMessage("SHIELD");
                 }
             }
 
@@ -805,8 +839,6 @@ public class GamePanel extends JPanel implements KeyListener {
                 enemyBullets.remove(i--);
             }
         }
-
-        backgroundLabel.repaint();
     }
 
     //----------------------------------------------------------------
@@ -922,7 +954,6 @@ public class GamePanel extends JPanel implements KeyListener {
 
                 else {
 
-                    showMessage("SHIELD");
                 }
             }
 
@@ -933,8 +964,6 @@ public class GamePanel extends JPanel implements KeyListener {
                 eggs.remove(i--);
             }
         }
-
-        backgroundLabel.repaint();
     }
 
     //----------------------------------------------------------------
@@ -1054,14 +1083,14 @@ public class GamePanel extends JPanel implements KeyListener {
 
         long now = System.currentTimeMillis();
 
-        int shootDelay = 300;
+        int currentShootDelay = shootDelay;
 
         if (now < rapidFireEndTime) {
 
-            shootDelay = 200;
+            currentShootDelay = 120;
         }
 
-        if (now - lastBulletShotTime >= shootDelay) {
+        if (now - lastBulletShotTime >= currentShootDelay) {
 
             int startX = plane.getXPosition() + 28;
             int startY = plane.getYPosition();
@@ -1142,9 +1171,6 @@ public class GamePanel extends JPanel implements KeyListener {
 
             powerUps.add(powerUp);
             backgroundLabel.add(powerUp);
-
-            backgroundLabel.revalidate();
-            backgroundLabel.repaint();
         }
     }
 
@@ -1195,8 +1221,6 @@ public class GamePanel extends JPanel implements KeyListener {
                 powerUps.remove(i--);
             }
         }
-
-        backgroundLabel.repaint();
     }
 
     private void applyPowerUp(String type) {
@@ -1240,7 +1264,6 @@ public class GamePanel extends JPanel implements KeyListener {
 
             else {
 
-                showMessage("MAX FIRE");
             }
         }
     }

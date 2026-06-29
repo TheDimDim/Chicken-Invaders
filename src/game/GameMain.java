@@ -1,7 +1,7 @@
 package game;
 
 import ui.*;
-
+import ui.StorePanel;
 import javax.swing.*;
 import java.awt.*;
 
@@ -86,6 +86,19 @@ public class GameMain extends JFrame {
 
         revalidate();
         repaint();
+    }
+    //----------------------------------------------------------------
+
+    public void showStore() {
+
+        StorePanel storePanel = new StorePanel(this);
+
+        setContentPane(storePanel);
+
+        revalidate();
+        repaint();
+
+        storePanel.requestFocusInWindow();
     }
 
     //----------------------------------------------------------------

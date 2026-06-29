@@ -40,61 +40,9 @@ public class MainMenu extends JPanel {
         backgroundLabel.add(titleLabel);
 
         //----------------------------------------------------------------
-        //High score
-
-        JButton highScoresButton = new JButton("High Scores");
-        highScoresButton.setBounds(275, 220, 250, 50);
-        styleButton(highScoresButton);
-        backgroundLabel.add(highScoresButton);
-
-        highScoresButton.addActionListener(new ActionListener() {
-
-            @Override
-            public void actionPerformed(ActionEvent e) {
-
-                gameMain.showHighScorePanel();
-            }
-        });
-
-        //----------------------------------------------------------------
-        //Setting button
-
-        JButton settingsButton = new JButton("Settings");
-        settingsButton.setBounds(275, 285, 250, 50);
-        styleButton(settingsButton);
-        backgroundLabel.add(settingsButton);
-
-        settingsButton.addActionListener(new ActionListener() {
-
-            @Override
-            public void actionPerformed(ActionEvent e) {
-
-                gameMain.showSettingsPanel();
-            }
-        });
-
-        //----------------------------------------------------------------
-        //How to play button
-
-        JButton howToPlayButton = new JButton("How to Play");
-        howToPlayButton.setBounds(275, 350, 250, 50);
-        styleButton(howToPlayButton);
-        backgroundLabel.add(howToPlayButton);
-
-        howToPlayButton.addActionListener(new ActionListener() {
-
-            @Override
-            public void actionPerformed(ActionEvent e) {
-
-                gameMain.showHowToPlayPanel();
-            }
-        });
-
-        //----------------------------------------------------------------
         //New game button
-
         JButton newGameButton = new JButton("New Game");
-        newGameButton.setBounds(275, 155, 250, 50);
+        newGameButton.setBounds(275, 145, 250, 45);
         styleButton(newGameButton);
         backgroundLabel.add(newGameButton);
 
@@ -116,10 +64,86 @@ public class MainMenu extends JPanel {
         });
 
         //----------------------------------------------------------------
+        //Store button
+
+        JButton storeButton = new JButton("Store");
+        storeButton.setBounds(275, 200, 250, 45);
+        styleButton(storeButton);
+        backgroundLabel.add(storeButton);
+
+        storeButton.addActionListener(new ActionListener() {
+
+            @Override
+            public void actionPerformed(ActionEvent e) {
+
+                if (DatabaseManager.getCurrentUsername() == null) {
+
+                    gameMain.showLoginPanel();
+                }
+
+                else {
+
+                    gameMain.showStore();
+                }
+            }
+        });
+
+        //----------------------------------------------------------------
+        //High score
+
+        JButton highScoresButton = new JButton("High Scores");
+        highScoresButton.setBounds(275, 255, 250, 45);
+        styleButton(highScoresButton);
+        backgroundLabel.add(highScoresButton);
+
+        highScoresButton.addActionListener(new ActionListener() {
+
+            @Override
+            public void actionPerformed(ActionEvent e) {
+
+                gameMain.showHighScorePanel();
+            }
+        });
+
+        //----------------------------------------------------------------
+        //Setting button
+
+        JButton settingsButton = new JButton("Settings");
+        settingsButton.setBounds(275, 310, 250, 45);
+        styleButton(settingsButton);
+        backgroundLabel.add(settingsButton);
+
+        settingsButton.addActionListener(new ActionListener() {
+
+            @Override
+            public void actionPerformed(ActionEvent e) {
+
+                gameMain.showSettingsPanel();
+            }
+        });
+
+        //----------------------------------------------------------------
+        //How to play button
+
+        JButton howToPlayButton = new JButton("How to Play");
+        howToPlayButton.setBounds(275, 365, 250, 45);
+        styleButton(howToPlayButton);
+        backgroundLabel.add(howToPlayButton);
+
+        howToPlayButton.addActionListener(new ActionListener() {
+
+            @Override
+            public void actionPerformed(ActionEvent e) {
+
+                gameMain.showHowToPlayPanel();
+            }
+        });
+
+        //----------------------------------------------------------------
         //Exit button
 
         JButton exitButton = new JButton("Exit");
-        exitButton.setBounds(275, 415, 250, 50);
+        exitButton.setBounds(275, 420, 250, 45);
         styleButton(exitButton);
         backgroundLabel.add(exitButton);
 
