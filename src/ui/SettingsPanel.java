@@ -25,49 +25,67 @@ public class SettingsPanel extends JPanel {
         this.gameMain = gameMain;
 
         setLayout(null);
-        setBackground(Color.BLACK);
+
+        ImageIcon background = new ImageIcon("C:\\Users\\Asus\\Downloads\\background.jpg");
+        Image backgroundImage = background.getImage().getScaledInstance(800, 600, Image.SCALE_SMOOTH);
+
+        JLabel backgroundLabel = new JLabel(new ImageIcon(backgroundImage));
+        backgroundLabel.setBounds(0, 0, 800, 600);
+        backgroundLabel.setLayout(null);
+        add(backgroundLabel);
+
+        //----------------------------------------------------------------
+        //Title
 
         JLabel titleLabel = new JLabel("SETTINGS");
-        titleLabel.setForeground(Color.WHITE);
-        titleLabel.setFont(new Font("Arial", Font.BOLD, 40));
-        titleLabel.setBounds(290, 70, 250, 50);
-        add(titleLabel);
+        titleLabel.setForeground(new Color(220, 225, 255));
+        titleLabel.setFont(new Font("Impact", Font.BOLD, 64));
+        titleLabel.setHorizontalAlignment(SwingConstants.CENTER);
+        titleLabel.setBounds(200, 55, 400, 80);
+        backgroundLabel.add(titleLabel);
+
+        //----------------------------------------------------------------
+        //Check boxes
 
         backgroundMusicCheckBox = new JCheckBox("Background Music");
-        backgroundMusicCheckBox.setForeground(Color.WHITE);
-        backgroundMusicCheckBox.setBackground(Color.BLACK);
+        styleCheckBox(backgroundMusicCheckBox);
         backgroundMusicCheckBox.setSelected(DatabaseManager.getBackgroundMusic() == 1);
-        backgroundMusicCheckBox.setBounds(300, 160, 250, 35);
-        add(backgroundMusicCheckBox);
+        backgroundMusicCheckBox.setBounds(260, 165, 330, 45);
+        backgroundLabel.add(backgroundMusicCheckBox);
 
         shotSoundCheckBox = new JCheckBox("Shot Sound");
-        shotSoundCheckBox.setForeground(Color.WHITE);
-        shotSoundCheckBox.setBackground(Color.BLACK);
+        styleCheckBox(shotSoundCheckBox);
         shotSoundCheckBox.setSelected(DatabaseManager.getShotSound() == 1);
-        shotSoundCheckBox.setBounds(300, 205, 250, 35);
-        add(shotSoundCheckBox);
+        shotSoundCheckBox.setBounds(260, 220, 330, 45);
+        backgroundLabel.add(shotSoundCheckBox);
 
         crashSoundCheckBox = new JCheckBox("Crash / Explosion Sound");
-        crashSoundCheckBox.setForeground(Color.WHITE);
-        crashSoundCheckBox.setBackground(Color.BLACK);
+        styleCheckBox(crashSoundCheckBox);
         crashSoundCheckBox.setSelected(DatabaseManager.getCrashSound() == 1);
-        crashSoundCheckBox.setBounds(300, 250, 250, 35);
-        add(crashSoundCheckBox);
+        crashSoundCheckBox.setBounds(260, 275, 330, 45);
+        backgroundLabel.add(crashSoundCheckBox);
 
         gameOverSoundCheckBox = new JCheckBox("Game Over / Win Sound");
-        gameOverSoundCheckBox.setForeground(Color.WHITE);
-        gameOverSoundCheckBox.setBackground(Color.BLACK);
+        styleCheckBox(gameOverSoundCheckBox);
         gameOverSoundCheckBox.setSelected(DatabaseManager.getGameOverSound() == 1);
-        gameOverSoundCheckBox.setBounds(300, 295, 250, 35);
-        add(gameOverSoundCheckBox);
+        gameOverSoundCheckBox.setBounds(260, 330, 330, 45);
+        backgroundLabel.add(gameOverSoundCheckBox);
+
+        //----------------------------------------------------------------
+        //Save button
 
         JButton saveButton = new JButton("Save");
-        saveButton.setBounds(285, 370, 100, 35);
-        add(saveButton);
+        saveButton.setBounds(230, 430, 160, 55);
+        styleButton(saveButton);
+        backgroundLabel.add(saveButton);
+
+        //----------------------------------------------------------------
+        //Back button
 
         JButton backButton = new JButton("Back");
-        backButton.setBounds(415, 370, 100, 35);
-        add(backButton);
+        backButton.setBounds(410, 430, 160, 55);
+        styleButton(backButton);
+        backgroundLabel.add(backButton);
 
         saveButton.addActionListener(new ActionListener() {
 
@@ -109,5 +127,30 @@ public class SettingsPanel extends JPanel {
                 gameMain.showMainMenu();
             }
         });
+    }
+
+    //----------------------------------------------------------------
+    //Style button
+
+    private void styleButton(JButton button) {
+
+        button.setFont(new Font("Impact", Font.PLAIN, 26));
+        button.setForeground(new Color(220, 225, 255));
+        button.setBackground(new Color(35, 25, 70));
+        button.setFocusPainted(false);
+        button.setBorder(new RoundedBorder(35));
+    }
+
+    //----------------------------------------------------------------
+    //Style check box
+
+    private void styleCheckBox(JCheckBox checkBox) {
+
+        checkBox.setFont(new Font("Segoe UI", Font.BOLD, 18));
+        checkBox.setForeground(new Color(220, 225, 255));
+        checkBox.setBackground(new Color(15, 10, 35));
+        checkBox.setFocusPainted(false);
+        checkBox.setOpaque(true);
+        checkBox.setBorder(new RoundedBorder(25));
     }
 }

@@ -67,6 +67,15 @@ public class GameMain extends JFrame {
         revalidate();
         repaint();
     }
+    //----------------------------------------------------------------
+
+    public void showHowToPlayPanel() {
+
+        setContentPane(new HowToPlayPanel(this));
+
+        revalidate();
+        repaint();
+    }
 
 
     //----------------------------------------------------------------

@@ -62,6 +62,7 @@ public class GamePanel extends JPanel implements KeyListener {
 
 
     private JLabel usernameLabel;
+    private JLabel powerLabel;
 
     private int level;
     private JLabel levelLabel;
@@ -154,6 +155,11 @@ public class GamePanel extends JPanel implements KeyListener {
         usernameLabel.setForeground(Color.WHITE);
         usernameLabel.setBounds(50, 90, 250, 40);
         backgroundLabel.add(usernameLabel);
+
+        powerLabel = new JLabel("Power: None");
+        powerLabel.setForeground(Color.WHITE);
+        powerLabel.setBounds(650, 120, 140, 40);
+        backgroundLabel.add(powerLabel);
 
         //Pause
         paused = false;
@@ -1090,6 +1096,7 @@ public class GamePanel extends JPanel implements KeyListener {
         if (type.equals("RAPID_FIRE")) {
 
             rapidFireEndTime = System.currentTimeMillis() + 8000;
+            powerLabel.setText("Power: Rapid");
             showMessage("RAPID FIRE");
         }
 
@@ -1097,6 +1104,7 @@ public class GamePanel extends JPanel implements KeyListener {
 
             freezeActive = true;
             freezeEndTime = System.currentTimeMillis() + 3000;
+            powerLabel.setText("Power: Freeze");
             showMessage("FREEZE");
         }
 
@@ -1115,6 +1123,7 @@ public class GamePanel extends JPanel implements KeyListener {
 
             shieldActive = true;
             shieldEndTime = System.currentTimeMillis() + 10000;
+            powerLabel.setText("Power: Shield");
             showMessage("SHIELD");
         }
 
@@ -1159,7 +1168,13 @@ public class GamePanel extends JPanel implements KeyListener {
 
             freezeActive = false;
         }
+
+        if (now > rapidFireEndTime && !shieldActive && !freezeActive) {
+
+            powerLabel.setText("Power: None");
+        }
     }
+
 
 
 

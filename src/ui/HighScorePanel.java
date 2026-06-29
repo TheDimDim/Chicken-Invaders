@@ -20,28 +20,52 @@ public class HighScorePanel extends JPanel {
         this.gameMain = gameMain;
 
         setLayout(null);
-        setBackground(Color.BLACK);
+
+        ImageIcon background = new ImageIcon("C:\\Users\\Asus\\Downloads\\background.jpg");
+        Image backgroundImage = background.getImage().getScaledInstance(800, 600, Image.SCALE_SMOOTH);
+
+        JLabel backgroundLabel = new JLabel(new ImageIcon(backgroundImage));
+        backgroundLabel.setBounds(0, 0, 800, 600);
+        backgroundLabel.setLayout(null);
+        add(backgroundLabel);
+
+        //----------------------------------------------------------------
+        //Title
 
         JLabel titleLabel = new JLabel("HIGH SCORES");
-        titleLabel.setForeground(Color.WHITE);
-        titleLabel.setFont(new Font("Arial", Font.BOLD, 40));
-        titleLabel.setBounds(250, 40, 350, 50);
-        add(titleLabel);
+        titleLabel.setForeground(new Color(220, 225, 255));
+        titleLabel.setFont(new Font("Impact", Font.BOLD, 56));
+        titleLabel.setHorizontalAlignment(SwingConstants.CENTER);
+        titleLabel.setBounds(150, 30, 500, 70);
+        backgroundLabel.add(titleLabel);
+
+        //----------------------------------------------------------------
+        //Scores area
 
         JTextArea scoresArea = new JTextArea();
         scoresArea.setText(DatabaseManager.getHighScoresText());
         scoresArea.setEditable(false);
-        scoresArea.setBackground(Color.BLACK);
-        scoresArea.setForeground(Color.WHITE);
-        scoresArea.setFont(new Font("Arial", Font.PLAIN, 16));
+        scoresArea.setLineWrap(true);
+        scoresArea.setWrapStyleWord(true);
+        scoresArea.setBackground(new Color(15, 10, 35));
+        scoresArea.setForeground(new Color(220, 225, 255));
+        scoresArea.setFont(new Font("Segoe UI", Font.BOLD, 16));
+        scoresArea.setBorder(BorderFactory.createEmptyBorder(15, 15, 15, 15));
 
         JScrollPane scrollPane = new JScrollPane(scoresArea);
-        scrollPane.setBounds(180, 120, 440, 330);
-        add(scrollPane);
+        scrollPane.setBounds(125, 115, 550, 360);
+        scrollPane.setBorder(new RoundedBorder(30));
+        scrollPane.setBackground(new Color(15, 10, 35));
+        scrollPane.getViewport().setBackground(new Color(15, 10, 35));
+        backgroundLabel.add(scrollPane);
+
+        //----------------------------------------------------------------
+        //Back button
 
         JButton backButton = new JButton("Back");
-        backButton.setBounds(340, 480, 120, 35);
-        add(backButton);
+        backButton.setBounds(275, 500, 250, 50);
+        styleButton(backButton);
+        backgroundLabel.add(backButton);
 
         backButton.addActionListener(new ActionListener() {
 
@@ -51,5 +75,17 @@ public class HighScorePanel extends JPanel {
                 gameMain.showMainMenu();
             }
         });
+    }
+
+    //----------------------------------------------------------------
+    //Style button
+
+    private void styleButton(JButton button) {
+
+        button.setFont(new Font("Impact", Font.PLAIN, 24));
+        button.setForeground(new Color(220, 225, 255));
+        button.setBackground(new Color(35, 25, 70));
+        button.setFocusPainted(false);
+        button.setBorder(new RoundedBorder(35));
     }
 }
