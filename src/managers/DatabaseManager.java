@@ -19,7 +19,7 @@ public class DatabaseManager {
 
             Connection connection = DriverManager.getConnection(DB_URL);
 
-            String sql = "INSERT INTO users(username, password) VALUES('" + username + "', '" + password + "')";
+            String sql = "INSERT INTO users(username, password, selected_plane) VALUES('" + username + "', '" + password + "', 'Default')";
 
             Statement statement = connection.createStatement();
             statement.executeUpdate(sql);
@@ -73,6 +73,10 @@ public class DatabaseManager {
 
         return currentUsername;
     }
+
+    //----------------------------------------------------------------
+    //Score
+
     public static void saveScore(int score, int level) {
 
         if (currentUsername == null) {
@@ -102,6 +106,126 @@ public class DatabaseManager {
             System.out.println("Save score error: " + e.getMessage());
         }
     }
+
+    public static int getCurrentUserHighScore() {
+
+        if (currentUsername == null) {
+
+            return 0;
+        }
+
+        try {
+
+            Class.forName("org.sqlite.JDBC");
+
+            Connection connection = DriverManager.getConnection(DB_URL);
+
+            String sql = "SELECT high_score FROM users WHERE username = '" + currentUsername + "'";
+
+            Statement statement = connection.createStatement();
+            ResultSet resultSet = statement.executeQuery(sql);
+
+            int highScore = 0;
+
+            if (resultSet.next()) {
+
+                highScore = resultSet.getInt("high_score");
+            }
+
+            resultSet.close();
+            statement.close();
+            connection.close();
+
+            return highScore;
+
+        } catch (Exception e) {
+
+            System.out.println("Get high score error: " + e.getMessage());
+            return 0;
+        }
+    }
+
+    //----------------------------------------------------------------
+    //Store
+
+    public static String getSelectedPlane() {
+
+        if (currentUsername == null) {
+
+            return "Default";
+        }
+
+        try {
+
+            Class.forName("org.sqlite.JDBC");
+
+            Connection connection = DriverManager.getConnection(DB_URL);
+
+            String sql = "SELECT selected_plane FROM users WHERE username = '" + currentUsername + "'";
+
+            Statement statement = connection.createStatement();
+            ResultSet resultSet = statement.executeQuery(sql);
+
+            String selectedPlane = "Default";
+
+            if (resultSet.next()) {
+
+                selectedPlane = resultSet.getString("selected_plane");
+
+                if (selectedPlane == null) {
+
+                    selectedPlane = "Default";
+                }
+            }
+
+            resultSet.close();
+            statement.close();
+            connection.close();
+
+            return selectedPlane;
+
+        } catch (Exception e) {
+
+            System.out.println("Get selected plane error: " + e.getMessage());
+            return "Default";
+        }
+    }
+
+    public static void setSelectedPlane(String planeName) {
+
+        if (currentUsername == null) {
+
+            return;
+        }
+
+        try {
+
+            Class.forName("org.sqlite.JDBC");
+
+            Connection connection = DriverManager.getConnection(DB_URL);
+
+            String sql = "UPDATE users SET selected_plane = '" + planeName + "' WHERE username = '" + currentUsername + "'";
+
+            Statement statement = connection.createStatement();
+            statement.executeUpdate(sql);
+
+            statement.close();
+            connection.close();
+
+        } catch (Exception e) {
+
+            System.out.println("Set selected plane error: " + e.getMessage());
+        }
+    }
+
+    public static boolean canBuyPlane(int cost) {
+
+        return getCurrentUserHighScore() >= cost;
+    }
+
+    //----------------------------------------------------------------
+    //Sound settings
+
     public static void saveSoundSettings(int backgroundMusic, int shotSound, int crashSound, int gameOverSound) {
 
         if (currentUsername == null) {
@@ -192,6 +316,9 @@ public class DatabaseManager {
         }
     }
 
+    //----------------------------------------------------------------
+    //Game records
+
     public static void saveGameRecord(int score, int level) {
 
         if (currentUsername == null) {
@@ -270,10 +397,4 @@ public class DatabaseManager {
 
         return text;
     }
-
-
-
-
-
-
 }

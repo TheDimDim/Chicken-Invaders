@@ -1,24 +1,35 @@
 package game;
 
 import ui.*;
-t
+
 import javax.swing.*;
 import java.awt.*;
 
 public class GameMain extends JFrame {
 
     public GameMain() {
+
         setTitle("Chicken Invaders");
         setSize(800, 600);
         setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
         setResizable(false);
         setLocationRelativeTo(null);
 
-        MainMenu mainMenu = new MainMenu(this);
-        add(mainMenu);
+        showMainMenu();
+
+        setVisible(true);
     }
 
-    //----------------------------------------------------------------
+    public void showMainMenu() {
+
+        MainMenu mainMenu = new MainMenu(this);
+
+        setContentPane(mainMenu);
+
+        revalidate();
+        repaint();
+    }
+
     public void startNewGame() {
 
         GamePanel gamePanel = new GamePanel(this);
@@ -31,66 +42,70 @@ public class GameMain extends JFrame {
         gamePanel.requestFocusInWindow();
     }
 
-    //----------------------------------------------------------------
-    public void showMainMenu() {
-
-        setContentPane(new MainMenu(this));
-
-        revalidate();
-        repaint();
-    }
-
-    //----------------------------------------------------------------
-
-    public void showLoginPanel() {
-
-        setContentPane(new LoginPanel(this));
-
-        revalidate();
-        repaint();
-    }
-    //----------------------------------------------------------------
-
-    public void showSettingsPanel() {
-
-        setContentPane(new SettingsPanel(this));
-
-        revalidate();
-        repaint();
-    }
-    //----------------------------------------------------------------
-
-    public void showRegisterPanel() {
-
-        setContentPane(new RegisterPanel(this));
-
-        revalidate();
-        repaint();
-    }
-    //----------------------------------------------------------------
-
     public void showHowToPlayPanel() {
 
-        setContentPane(new HowToPlayPanel(this));
+        HowToPlayPanel howToPlayPanel = new HowToPlayPanel(this);
+
+        setContentPane(howToPlayPanel);
 
         revalidate();
         repaint();
     }
-
-
-    //----------------------------------------------------------------
 
     public void showHighScorePanel() {
 
-        setContentPane(new HighScorePanel(this));
+        HighScorePanel highScorePanel = new HighScorePanel(this);
+
+        setContentPane(highScorePanel);
 
         revalidate();
         repaint();
     }
 
-    //----------------------------------------------------------------
+    public void showSettingsPanel() {
+
+        SettingsPanel settingsPanel = new SettingsPanel(this);
+
+        setContentPane(settingsPanel);
+
+        revalidate();
+        repaint();
+    }
+
+    public void showLoginPanel() {
+
+        LoginPanel loginPanel = new LoginPanel(this);
+
+        setContentPane(loginPanel);
+
+        revalidate();
+        repaint();
+    }
+
+    public void showRegisterPanel() {
+
+        RegisterPanel registerPanel = new RegisterPanel(this);
+
+        setContentPane(registerPanel);
+
+        revalidate();
+        repaint();
+    }
+
+    public void showStore() {
+
+        StorePanel storePanel = new StorePanel(this);
+
+        setContentPane(storePanel);
+
+        revalidate();
+        repaint();
+
+        storePanel.requestFocusInWindow();
+    }
+
     public static void main(String[] args) {
-        GameMain window = new GameMain();
-        window.setVisible(true);
+
+        new GameMain();
     }
 }
