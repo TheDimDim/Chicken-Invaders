@@ -11,19 +11,24 @@ import java.awt.event.ActionListener;
 
 public class MainMenu extends JPanel {
 
+    //Fields
     private GameMain gameMain;
 
+    //----------------------------------------------------------------
+
+    //Constructor
     public MainMenu(GameMain gameMain) {
 
         this.gameMain = gameMain;
         setLayout(null);
 
+        //Background music
         if (DatabaseManager.getBackgroundMusic() == 1) {
 
-            SoundManager.playBackgroundMusic("C:\\Users\\Asus\\Downloads\\background.wav");
+            SoundManager.playBackgroundMusic("visuals/background_music.wav");
         }
 
-        ImageIcon background = new ImageIcon("C:\\Users\\Asus\\Downloads\\background.jpg");
+        ImageIcon background = new ImageIcon("visuals/background.jpg");
         Image backgroundImage = background.getImage().getScaledInstance(800, 600, Image.SCALE_SMOOTH);
 
         JLabel backgroundLabel = new JLabel(new ImageIcon(backgroundImage));
@@ -31,7 +36,7 @@ public class MainMenu extends JPanel {
         backgroundLabel.setLayout(null);
         add(backgroundLabel);
 
-        //GAME TITLE
+        //Game title
         JLabel titleLabel = new JLabel("CHICKEN INVADERS");
         titleLabel.setForeground(new Color(220, 225, 255));
         titleLabel.setFont(new Font("Impact", Font.BOLD, 60));
@@ -156,8 +161,10 @@ public class MainMenu extends JPanel {
             }
         });
     }
-
     //----------------------------------------------------------------
+
+    //Methods
+
     //Style button
 
     private void styleButton(JButton button) {
@@ -172,7 +179,6 @@ public class MainMenu extends JPanel {
 
 //----------------------------------------------------------------
 //Rounded border
-
 class RoundedBorder implements javax.swing.border.Border {
 
     private int radius;

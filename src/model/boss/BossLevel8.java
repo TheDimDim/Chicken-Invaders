@@ -5,22 +5,13 @@ import java.awt.*;
 
 public class BossLevel8 extends Boss {
 
-    //Fields
-    private int maxHealth;
-    private int health;
-
-    //----------------------------------------------------------------
-
     //Constructor
     public BossLevel8(int x, int y, int health, int score) {
         super(x, y, health, score);
 
-        this.maxHealth = health;
-        this.health = health;
+        ImageIcon bossIcon = new ImageIcon("visuals/boss2.png");
 
-        ImageIcon icon = new ImageIcon("C:\\Users\\Asus\\Downloads\\chicken-20260613T110124Z-3-001\\chicken\\boss2.png");
-
-        Image bossImage = icon.getImage().getScaledInstance(220, 220, Image.SCALE_SMOOTH);
+        Image bossImage = bossIcon.getImage().getScaledInstance(220, 220, Image.SCALE_SMOOTH);
         setIcon(new ImageIcon(bossImage));
 
         setBounds(x, y, 220, 220);
@@ -29,19 +20,17 @@ public class BossLevel8 extends Boss {
     //----------------------------------------------------------------
 
     //Methods
+
     @Override
     public void damageBoss() {
-        health--;
+
+        super.damageBoss();
         repaint();
     }
 
     @Override
     public boolean isDead() {
         return health <= 0;
-    }
-
-    public int getScore() {
-        return super.getScore();
     }
 
     @Override

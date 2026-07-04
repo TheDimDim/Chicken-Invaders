@@ -15,7 +15,7 @@ public class RegisterPanel extends JPanel {
     private JTextField usernameField;
     private JPasswordField passwordField;
     private boolean passwordVisible;
-    private char defaultEchoChar;
+    private char passwordChar;
 
     //----------------------------------------------------------------
 
@@ -26,7 +26,7 @@ public class RegisterPanel extends JPanel {
 
         setLayout(null);
 
-        ImageIcon background = new ImageIcon("C:\\Users\\Asus\\Downloads\\background.jpg");
+        ImageIcon background = new ImageIcon("visuals/background.jpg");
         Image backgroundImage = background.getImage().getScaledInstance(800, 600, Image.SCALE_SMOOTH);
 
         JLabel backgroundLabel = new JLabel(new ImageIcon(backgroundImage));
@@ -82,7 +82,7 @@ public class RegisterPanel extends JPanel {
         passwordField.setBorder(new RoundedBorder(30));
         backgroundLabel.add(passwordField);
 
-        defaultEchoChar = passwordField.getEchoChar();
+        passwordChar = passwordField.getEchoChar();
 
         JButton showButton = new JButton("Show");
         showButton.setBounds(570, 260, 80, 48);
@@ -100,7 +100,7 @@ public class RegisterPanel extends JPanel {
 
                 if (passwordVisible) {
 
-                    passwordField.setEchoChar(defaultEchoChar);
+                    passwordField.setEchoChar(passwordChar);
                     showButton.setText("Show");
                     passwordVisible = false;
                 }
@@ -121,14 +121,6 @@ public class RegisterPanel extends JPanel {
         registerButton.setBounds(230, 365, 165, 55);
         styleButton(registerButton);
         backgroundLabel.add(registerButton);
-
-        //----------------------------------------------------------------
-        //Back button
-
-        JButton backButton = new JButton("Back");
-        backButton.setBounds(415, 365, 165, 55);
-        styleButton(backButton);
-        backgroundLabel.add(backButton);
 
         registerButton.addActionListener(new ActionListener() {
 
@@ -160,6 +152,22 @@ public class RegisterPanel extends JPanel {
                 }
             }
         });
+
+        //----------------------------------------------------------------
+        //Back button
+
+        createBackButton(backgroundLabel);
+    }
+
+    //----------------------------------------------------------------
+    //Create back button
+
+    private void createBackButton(JLabel backgroundLabel) {
+
+        JButton backButton = new JButton("Back");
+        backButton.setBounds(415, 365, 165, 55);
+        styleButton(backButton);
+        backgroundLabel.add(backButton);
 
         backButton.addActionListener(new ActionListener() {
 

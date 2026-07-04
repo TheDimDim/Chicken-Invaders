@@ -28,39 +28,34 @@ public class PowerUp extends JLabel {
 
     //----------------------------------------------------------------
 
-    //Get power up icon
+    //Power up icon
     private ImageIcon getPowerUpIcon() {
 
         String path = "";
 
         if (type.equals("RAPID_FIRE")) {
 
-            path = "C:\\Users\\Asus\\Downloads\\powerup2-20260626T142950Z-3-001\\powerup2\\fast_shot.png";
+            path = "visuals/rapid_fire.png";
         }
 
         else if (type.equals("FREEZE")) {
 
-            path = "C:\\Users\\Asus\\Downloads\\powerup2-20260626T142950Z-3-001\\powerup2\\freeze.png";
+            path = "visuals/freeze.png";
         }
 
         else if (type.equals("EXTRA_LIFE")) {
 
-            path = "C:\\Users\\Asus\\Downloads\\powerup2-20260626T142950Z-3-001\\powerup2\\heal.png";
+            path = "visuals/extra_life.png";
         }
 
         else if (type.equals("SHIELD")) {
 
-            path = "C:\\Users\\Asus\\Downloads\\powerup2-20260626T142950Z-3-001\\powerup2\\sheild.png";
+            path = "visuals/shield.png";
         }
 
         else if (type.equals("ADD_FIRE")) {
 
-            path = "C:\\Users\\Asus\\Downloads\\powerup2-20260626T142950Z-3-001\\powerup2\\add_shot.png";
-        }
-
-        else {
-
-            path = "C:\\Users\\Asus\\Downloads\\powerup2-20260626T142950Z-3-001\\powerup2\\bomb.png";
+            path = "visuals/add_fire.png";
         }
 
         ImageIcon icon = new ImageIcon(path);
@@ -73,7 +68,7 @@ public class PowerUp extends JLabel {
     //----------------------------------------------------------------
 
     //Move
-    public void movement() {
+    public void moveDown() {
 
         y += speed;
 
@@ -95,6 +90,7 @@ public class PowerUp extends JLabel {
 
         return type;
     }
+
     //----------------------------------------------------------------
     //Is out of screen
     public boolean isOutOfScreen() {

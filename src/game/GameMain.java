@@ -3,10 +3,10 @@ package game;
 import ui.*;
 
 import javax.swing.*;
-import java.awt.*;
 
 public class GameMain extends JFrame {
 
+    //Constructor
     public GameMain() {
 
         setTitle("Chicken Invaders");
@@ -20,6 +20,9 @@ public class GameMain extends JFrame {
         setVisible(true);
     }
 
+    //----------------------------------------------------------------
+    //Methods
+
     public void showMainMenu() {
 
         MainMenu mainMenu = new MainMenu(this);
@@ -29,6 +32,8 @@ public class GameMain extends JFrame {
         revalidate();
         repaint();
     }
+
+    //----------------------------------------------------------------
 
     public void startNewGame() {
 
@@ -42,6 +47,8 @@ public class GameMain extends JFrame {
         gamePanel.requestFocusInWindow();
     }
 
+    //----------------------------------------------------------------
+
     public void showHowToPlayPanel() {
 
         HowToPlayPanel howToPlayPanel = new HowToPlayPanel(this);
@@ -51,6 +58,8 @@ public class GameMain extends JFrame {
         revalidate();
         repaint();
     }
+
+    //----------------------------------------------------------------
 
     public void showHighScorePanel() {
 
@@ -62,6 +71,8 @@ public class GameMain extends JFrame {
         repaint();
     }
 
+    //----------------------------------------------------------------
+
     public void showSettingsPanel() {
 
         SettingsPanel settingsPanel = new SettingsPanel(this);
@@ -71,6 +82,8 @@ public class GameMain extends JFrame {
         revalidate();
         repaint();
     }
+
+    //----------------------------------------------------------------
 
     public void showLoginPanel() {
 
@@ -82,6 +95,8 @@ public class GameMain extends JFrame {
         repaint();
     }
 
+    //----------------------------------------------------------------
+
     public void showRegisterPanel() {
 
         RegisterPanel registerPanel = new RegisterPanel(this);
@@ -91,6 +106,8 @@ public class GameMain extends JFrame {
         revalidate();
         repaint();
     }
+
+    //----------------------------------------------------------------
 
     public void showStore() {
 
@@ -103,6 +120,8 @@ public class GameMain extends JFrame {
 
         storePanel.requestFocusInWindow();
     }
+
+    //----------------------------------------------------------------
 
     public static void main(String[] args) {
 

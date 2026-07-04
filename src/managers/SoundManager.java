@@ -4,7 +4,11 @@ import javax.sound.sampled.*;
 import java.io.File;
 
 public class SoundManager {
+    //Fields
     private static Clip backgroundClip;
+
+    //----------------------------------------------------------------
+    //Methods
 
     public static void playSound(String path) {
 
@@ -22,6 +26,8 @@ public class SoundManager {
             System.out.println("Sound error: " + e.getMessage());
         }
     }
+
+    //----------------------------------------------------------------
 
     public static void playSoundWithVolume(String path, float volume) {
 
@@ -43,6 +49,8 @@ public class SoundManager {
             System.out.println("Sound error: " + e.getMessage());
         }
     }
+
+    //----------------------------------------------------------------
 
     public static void playBackgroundMusic(String path) {
 
@@ -67,6 +75,8 @@ public class SoundManager {
         }
     }
 
+    //----------------------------------------------------------------
+
     public static void stopBackgroundMusic() {
 
         if (backgroundClip != null) {
@@ -76,6 +86,8 @@ public class SoundManager {
             backgroundClip = null;
         }
     }
+
+    //----------------------------------------------------------------
 
     public static void playShotSound(String path) {
 

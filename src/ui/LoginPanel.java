@@ -14,7 +14,7 @@ public class LoginPanel extends JPanel {
     private JTextField usernameField;
     private JPasswordField passwordField;
     private boolean passwordVisible;
-    private char defaultEchoChar;
+    private char passwordChar;
 
     //----------------------------------------------------------------
 
@@ -25,7 +25,7 @@ public class LoginPanel extends JPanel {
 
         setLayout(null);
 
-        ImageIcon background = new ImageIcon("C:\\Users\\Asus\\Downloads\\background.jpg");
+        ImageIcon background = new ImageIcon("visuals/background.jpg");
         Image backgroundImage = background.getImage().getScaledInstance(800, 600, Image.SCALE_SMOOTH);
 
         JLabel backgroundLabel = new JLabel(new ImageIcon(backgroundImage));
@@ -81,7 +81,7 @@ public class LoginPanel extends JPanel {
         passwordField.setBorder(new RoundedBorder(30));
         backgroundLabel.add(passwordField);
 
-        defaultEchoChar = passwordField.getEchoChar();
+        passwordChar = passwordField.getEchoChar();
 
         JButton showButton = new JButton("Show");
         showButton.setBounds(570, 260, 80, 48);
@@ -99,7 +99,7 @@ public class LoginPanel extends JPanel {
 
                 if (passwordVisible) {
 
-                    passwordField.setEchoChar(defaultEchoChar);
+                    passwordField.setEchoChar(passwordChar);
                     showButton.setText("Show");
                     passwordVisible = false;
                 }
@@ -114,7 +114,7 @@ public class LoginPanel extends JPanel {
         });
 
         //----------------------------------------------------------------
-        //LOGIN
+        //Login
 
         JButton loginButton = new JButton("Login");
         loginButton.setBounds(165, 365, 140, 55);
@@ -152,7 +152,7 @@ public class LoginPanel extends JPanel {
         });
 
         //----------------------------------------------------------------
-        //REGISTER
+        //Register
 
         JButton registerButton = new JButton("Register");
         registerButton.setBounds(330, 365, 140, 55);
@@ -169,7 +169,7 @@ public class LoginPanel extends JPanel {
         });
 
         //----------------------------------------------------------------
-        //BACK
+        //Back
 
         JButton backButton = new JButton("Back");
         backButton.setBounds(495, 365, 140, 55);

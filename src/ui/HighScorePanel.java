@@ -21,7 +21,7 @@ public class HighScorePanel extends JPanel {
 
         setLayout(null);
 
-        ImageIcon background = new ImageIcon("C:\\Users\\Asus\\Downloads\\background.jpg");
+        ImageIcon background = new ImageIcon("visuals/background.jpg");
         Image backgroundImage = background.getImage().getScaledInstance(800, 600, Image.SCALE_SMOOTH);
 
         JLabel backgroundLabel = new JLabel(new ImageIcon(backgroundImage));
@@ -58,7 +58,6 @@ public class HighScorePanel extends JPanel {
         scrollPane.setBackground(new Color(15, 10, 35));
         scrollPane.getViewport().setBackground(new Color(15, 10, 35));
         backgroundLabel.add(scrollPane);
-
         //----------------------------------------------------------------
         //Back button
 

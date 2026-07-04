@@ -21,9 +21,9 @@ public class Egg extends JLabel {
         this.y = y;
         this.xDirection = 0;
         this.yDirection = 1;
-        this.speed = 5;
+        this.speed = 4;
 
-        ImageIcon eggIcon = new ImageIcon("C:\\Users\\Asus\\Downloads\\chicken-20260613T110124Z-3-001\\chicken\\egg.png");
+        ImageIcon eggIcon = new ImageIcon("visuals/egg.png");
         Image eggImage = eggIcon.getImage().getScaledInstance(40, 50, Image.SCALE_SMOOTH);
 
         setIcon(new ImageIcon(eggImage));
@@ -38,7 +38,7 @@ public class Egg extends JLabel {
         this.yDirection = yDirection;
         this.speed = 5;
 
-        ImageIcon eggIcon = new ImageIcon("C:\\Users\\Asus\\Downloads\\chicken-20260613T110124Z-3-001\\chicken\\egg.png");
+        ImageIcon eggIcon = new ImageIcon("visuals/egg.png");
         Image eggImage = eggIcon.getImage().getScaledInstance(40, 50, Image.SCALE_SMOOTH);
 
         setIcon(new ImageIcon(eggImage));
@@ -48,7 +48,7 @@ public class Egg extends JLabel {
     //----------------------------------------------------------------
 
     //Methods
-    public void movement() {
+    public void move() {
 
         x += xDirection * speed;
         y += yDirection * speed;
@@ -60,10 +60,12 @@ public class Egg extends JLabel {
         return y;
     }
 
+
     public boolean isOutOfScreen() {
 
         return x < -50 || x > 850 || y < -50 || y > 650;
     }
+
 
     public boolean hitPlane(Plane plane) {
 

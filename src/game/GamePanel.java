@@ -15,26 +15,27 @@ import java.awt.event.*;
 import java.util.ArrayList;
 
 public class GamePanel extends JPanel implements KeyListener {
-
     //Fields
+
     private GameMain gameMain;
     private Plane plane;
     private JLabel backgroundLabel;
     private Timer timer;
 
-    //KEYS
+    //Keys
     private boolean rightPressed;
     private boolean leftPressed;
     private boolean upPressed;
     private boolean downPressed;
     private boolean spacePressed;
 
-    //BULLET
+    //Bullet
     private long lastBulletShotTime;
     private long lastShotSoundTime;
     private ArrayList<Bullet> bullets;
+    private int shootDelay;
 
-    //ENEMY
+    //Enemy
     private ArrayList<Cell> cells;
     private ArrayList<Bullet> enemyBullets;
     private int enemyDirection;
@@ -44,15 +45,15 @@ public class GamePanel extends JPanel implements KeyListener {
     private int eggDropInterval;
     private boolean edgeHandled;
 
-    //BOSS
+    //Boss
     private Boss boss;
 
-    //EGG
+    //Egg
     private ArrayList<Egg> eggs;
     private long lastEggDropTime;
     private long lastBossEggTime;
 
-    //POWER UP
+    //Powerup
     private ArrayList<PowerUp> powerUps;
     private int fireCount;
     private boolean shieldActive;
@@ -60,34 +61,38 @@ public class GamePanel extends JPanel implements KeyListener {
     private long rapidFireEndTime;
     private long shieldEndTime;
     private long freezeEndTime;
+    private JLabel powerLabel;
 
+    //Score
     private int score;
     private JLabel scoreLabel;
     private JLabel messageLabel;
 
+    //Lives
     private int lives;
     private JLabel livesLabel;
 
     private JLabel usernameLabel;
-    private JLabel powerLabel;
+    private JLabel fireLabel;
 
+    //Level
     private int level;
     private JLabel levelLabel;
 
+    //pause
     private boolean paused;
     private JLabel pauseLabel;
 
+    //Game over
     private boolean gameOver;
     private JLabel gameOverLabel;
 
-    private JLabel fireLabel;
+    //Store
+    private String selectedPlane;
 
     private int rows = 5;
     private int cols = 8;
 
-    //STORE
-    private String selectedPlane;
-    private int shootDelay;
 
     //----------------------------------------------------------------
 
@@ -149,7 +154,7 @@ public class GamePanel extends JPanel implements KeyListener {
             shootDelay = 150;
         }
 
-        ImageIcon background = new ImageIcon("C:\\Users\\Asus\\Downloads\\background.jpg");
+        ImageIcon background = new ImageIcon("visuals/background.jpg");
         Image backgroundImage = background.getImage().getScaledInstance(800, 600, Image.SCALE_SMOOTH);
 
         backgroundLabel = new JLabel(new ImageIcon(backgroundImage));
@@ -165,7 +170,7 @@ public class GamePanel extends JPanel implements KeyListener {
 
         if (DatabaseManager.getBackgroundMusic() == 1) {
 
-            SoundManager.playBackgroundMusic("C:\\Users\\Asus\\Downloads\\background.wav");
+            SoundManager.playBackgroundMusic("visuals/background_music.wav");
         }
 
         //HUD
@@ -463,7 +468,7 @@ public class GamePanel extends JPanel implements KeyListener {
     private void bulletsMovement() {
 
         for (int i = 0; i < bullets.size(); i++) {
-            bullets.get(i).movement();
+            bullets.get(i).moveUp();
         }
     }
 
@@ -485,7 +490,7 @@ public class GamePanel extends JPanel implements KeyListener {
 
                 if (DatabaseManager.getCrashSound() == 1) {
 
-                    SoundManager.playSoundWithVolume("C:\\Users\\Asus\\Downloads\\sound-effects-20260621T162013Z-3-001\\sound-effects\\mixkit-epic-impact-afar-explosion-2782.wav", -12.0f);
+                    SoundManager.playSoundWithVolume("visuals/explosion.wav", -12.0f);
                 }
 
                 backgroundLabel.remove(bullet);
@@ -516,7 +521,7 @@ public class GamePanel extends JPanel implements KeyListener {
 
                     if (DatabaseManager.getCrashSound() == 1) {
 
-                        SoundManager.playSoundWithVolume("C:\\Users\\Asus\\Downloads\\sound-effects-20260621T162013Z-3-001\\sound-effects\\mixkit-epic-impact-afar-explosion-2782.wav", -12.0f);
+                        SoundManager.playSoundWithVolume("visuals/explosion.wav", -12.0f);
                     }
 
                     cell.hit();
@@ -737,11 +742,12 @@ public class GamePanel extends JPanel implements KeyListener {
             gameOverLabel.setForeground(Color.WHITE);
             gameOverLabel.setVisible(true);
 
-            DatabaseManager.saveScore(score, level);
+            DatabaseManager.saveScore(score, 8);
 
             if (DatabaseManager.getGameOverSound() == 1) {
 
-                SoundManager.playSoundWithVolume("C:\\Users\\Asus\\Downloads\\sound-effects-20260621T162013Z-3-001\\sound-effects\\mixkit-retro-arcade-game-over-470.wav", 6.0f);
+                SoundManager.playSoundWithVolume("visuals/win.wav", 6.0f);
+
             }
         }
 
@@ -828,6 +834,7 @@ public class GamePanel extends JPanel implements KeyListener {
                         backgroundLabel.add(b);
                     }
                 }
+
             }
         }
     }
@@ -845,7 +852,8 @@ public class GamePanel extends JPanel implements KeyListener {
 
             Bullet b = enemyBullets.get(i);
 
-            b.enemyMovement();
+            b.move();
+
             if (b.hitPlane(plane)) {
 
                 showExplosion(plane.getXPosition(), plane.getYPosition());
@@ -863,7 +871,7 @@ public class GamePanel extends JPanel implements KeyListener {
                 }
             }
 
-            else if (b.getY() > 600) {
+            else if (b.isOutOfScreen()) {
 
                 backgroundLabel.remove(b);
                 enemyBullets.remove(i--);
@@ -963,7 +971,7 @@ public class GamePanel extends JPanel implements KeyListener {
 
             Egg egg = eggs.get(i);
 
-            egg.movement();
+            egg.move();
 
             boolean removed = false;
 
@@ -1022,7 +1030,7 @@ public class GamePanel extends JPanel implements KeyListener {
     //----------------------------------------------------------------
 
     //----------------------------------------------------------------
-// Message
+    // Message
     private void showMessage(String text) {
 
         messageLabel.setText(text);
@@ -1060,7 +1068,7 @@ public class GamePanel extends JPanel implements KeyListener {
 
                 if (DatabaseManager.getGameOverSound() == 1) {
 
-                    SoundManager.playSoundWithVolume("C:\\Users\\Asus\\Downloads\\sound-effects-20260621T162013Z-3-001\\sound-effects\\mixkit-retro-arcade-game-over-470.wav", 6.0f);
+                    SoundManager.playSoundWithVolume("visuals/game_over.wav", 6.0f);
                 }
 
                 gameOver = true;
@@ -1075,7 +1083,7 @@ public class GamePanel extends JPanel implements KeyListener {
 
                 if (DatabaseManager.getCrashSound() == 1) {
 
-                    SoundManager.playSoundWithVolume("C:\\Users\\Asus\\Downloads\\sound-effects-20260621T162013Z-3-001\\sound-effects\\mixkit-epic-impact-afar-explosion-2782.wav", -12.0f);
+                    SoundManager.playSoundWithVolume("visuals/explosion.wav", -12.0f);
                 }
             }
         }
@@ -1139,7 +1147,7 @@ public class GamePanel extends JPanel implements KeyListener {
 
                 if (now - lastShotSoundTime >= 250) {
 
-                    SoundManager.playShotSound("C:\\Users\\Asus\\Downloads\\sound-effects-20260621T162013Z-3-001\\sound-effects\\mixkit-short-laser-gun-shot-1670.wav");
+                    SoundManager.playShotSound("visuals/shot.wav");
 
                     lastShotSoundTime = now;
                 }
@@ -1182,7 +1190,13 @@ public class GamePanel extends JPanel implements KeyListener {
         }
 
         if (e.getKeyCode() == KeyEvent.VK_ESCAPE) {
+
             SoundManager.stopBackgroundMusic();
+
+            if (timer != null) {
+
+                timer.stop();
+            }
             gameMain.showMainMenu();
         }
     }
@@ -1235,7 +1249,7 @@ public class GamePanel extends JPanel implements KeyListener {
 
             PowerUp powerUp = powerUps.get(i);
 
-            powerUp.movement();
+            powerUp.moveDown();
 
             if (powerUp.hitPlane(plane)) {
 
@@ -1298,9 +1312,20 @@ public class GamePanel extends JPanel implements KeyListener {
         }
     }
 
+
     private void checkPowerUpTimes() {
 
         long now = System.currentTimeMillis();
+
+        if (shieldActive && now > shieldEndTime) {
+
+            shieldActive = false;
+        }
+
+        if (freezeActive && now > freezeEndTime) {
+
+            freezeActive = false;
+        }
 
         if (shieldActive) {
 
@@ -1312,22 +1337,12 @@ public class GamePanel extends JPanel implements KeyListener {
             livesLabel.setForeground(Color.WHITE);
         }
 
-        if (shieldActive && now > shieldEndTime) {
-
-            shieldActive = false;
-            livesLabel.setForeground(Color.WHITE);
-        }
-
-        if (freezeActive && now > freezeEndTime) {
-
-            freezeActive = false;
-        }
-
-        if (now > rapidFireEndTime && !shieldActive && !freezeActive) {
+        if (!shieldActive && !freezeActive && now > rapidFireEndTime) {
 
             powerLabel.setText("⚡ Power: None");
         }
     }
+
 
     @Override
     public void keyReleased(KeyEvent e) {

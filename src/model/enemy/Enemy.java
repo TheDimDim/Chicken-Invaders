@@ -36,11 +36,6 @@ public abstract class Enemy extends JLabel {
         return score;
     }
 
-    public void moveDown() {
-        y += 0.2;
-        setBounds(x, (int)y, 60, 60);
-    }
-
     public boolean isOutOfScreen() {
         return y > 540;
     }
@@ -48,6 +43,7 @@ public abstract class Enemy extends JLabel {
     public boolean hitEdge() {
         return x <= 0 || x >= 740;
     }
+
     public boolean hitPlane(Plane plane) {
         if (getBounds().intersects(plane.getBounds())) {
             return true;

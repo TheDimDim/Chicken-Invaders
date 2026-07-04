@@ -24,7 +24,7 @@ public class StorePanel extends JPanel {
         this.gameMain = gameMain;
         setLayout(null);
 
-        ImageIcon background = new ImageIcon("C:\\Users\\Asus\\Downloads\\background.jpg");
+        ImageIcon background = new ImageIcon("visuals/background.jpg");
         Image backgroundImage = background.getImage().getScaledInstance(800, 600, Image.SCALE_SMOOTH);
 
         backgroundLabel = new JLabel(new ImageIcon(backgroundImage));
@@ -79,20 +79,22 @@ public class StorePanel extends JPanel {
         messageLabel.setHorizontalAlignment(SwingConstants.CENTER);
         backgroundLabel.add(messageLabel);
 
+        //Types of airplane
+
         addPlaneCard("Default", 0, "Speed 5", "Fire 300ms", "Lives 3", "-",
-                "C:\\Users\\Asus\\Downloads\\airplan-20260613T102345Z-3-001\\airplan\\2.png",
+                "visuals/plane_default.png",
                 70, 185);
 
         addPlaneCard("Fast", 5000, "Speed 7", "Fire 250ms", "Lives 3", "-",
-                "C:\\Users\\Asus\\Downloads\\airplan-20260613T102345Z-3-001\\airplan\\4.png",
+                "visuals/plane_fast.png",
                 430, 185);
 
         addPlaneCard("Heavy", 8000, "Speed 4", "Fire 200ms", "Lives 5", "-",
-                "C:\\Users\\Asus\\Downloads\\airplan-20260613T102345Z-3-001\\airplan\\6.png",
+                "visuals/plane_heavy.png",
                 70, 355);
 
         addPlaneCard("Sniper", 10000, "Speed 5", "Fire 150ms", "Lives 3", "Boss x2",
-                "C:\\Users\\Asus\\Downloads\\airplan-20260613T102345Z-3-001\\airplan\\5.png",
+                "visuals/plane_sniper.png",
                 430, 355);
     }
 

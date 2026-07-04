@@ -1,0 +1,29 @@
+Clean asset names for Chicken Invaders project
+
+2.png  ->  plane_default.png
+4.png  ->  plane_fast.png
+6.png  ->  plane_heavy.png
+5.png  ->  plane_sniper.png
+background.jpg  ->  background.jpg
+background2.jpg  ->  menu_background.jpg
+background.wav  ->  background_music.wav
+Chicken Invaders 2 Remastered OST - background.wav  ->  menu_music.wav
+Chicken Invaders 2 Remastered OST - Ending Theme.wav  ->  win.wav
+mixkit-short-laser-gun-shot-1670.wav  ->  shot.wav
+mixkit-epic-impact-afar-explosion-2782.wav  ->  explosion.wav
+mixkit-retro-arcade-game-over-470.wav  ->  game_over.wav
+shot.png  ->  shot.png
+fast_shot.png  ->  rapid_fire.png
+add_shot.png  ->  add_fire.png
+heal.png  ->  extra_life.png
+sheild.png  ->  shield.png
+freeze.png  ->  freeze.png
+egg.png  ->  egg.png
+Explosion.png  ->  explosion.png
+normal_chicken.png  ->  normal_chicken.png
+2xnoramal_chicken.png  ->  strong_chicken.png
+fast_chicken.png  ->  fast_chicken.png
+zigzag_chicken.png  ->  zigzag_chicken.png
+shooter_chicken.png  ->  shooter_chicken.png
+boss1.png  ->  boss1.png
+boss2.png  ->  boss2.png

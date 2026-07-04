@@ -22,30 +22,30 @@ public class Plane extends JLabel {
 
         String selectedPlane = DatabaseManager.getSelectedPlane();
 
-        String planePath = "C:\\Users\\Asus\\Downloads\\airplan-20260613T102345Z-3-001\\airplan\\2.png";
+        String planePath = "visuals/plane_default.png";
 
         if (selectedPlane.equals("Fast")) {
 
             speed = 7;
-            planePath = "C:\\Users\\Asus\\Downloads\\airplan-20260613T102345Z-3-001\\airplan\\4.png";
+            planePath = "visuals/plane_fast.png";
         }
 
         else if (selectedPlane.equals("Heavy")) {
 
             speed = 4;
-            planePath = "C:\\Users\\Asus\\Downloads\\airplan-20260613T102345Z-3-001\\airplan\\6.png";
+            planePath = "visuals/plane_heavy.png";
         }
 
         else if (selectedPlane.equals("Sniper")) {
 
             speed = 5;
-            planePath = "C:\\Users\\Asus\\Downloads\\airplan-20260613T102345Z-3-001\\airplan\\5.png";
+            planePath = "visuals/plane_sniper.png";
         }
 
         else {
 
             speed = 5;
-            planePath = "C:\\Users\\Asus\\Downloads\\airplan-20260613T102345Z-3-001\\airplan\\2.png";
+            planePath = "visuals/plane_default.png";
         }
 
         ImageIcon planeIcon = new ImageIcon(planePath);
@@ -91,12 +91,10 @@ public class Plane extends JLabel {
     }
 
     public int getXPosition() {
-
         return x;
     }
 
     public int getYPosition() {
-
         return y;
     }
 

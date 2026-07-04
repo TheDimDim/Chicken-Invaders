@@ -56,4 +56,5 @@ public class User {
 
         return this.password.equals(password);
     }
+
 }

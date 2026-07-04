@@ -35,6 +35,7 @@ public class DatabaseManager {
             return false;
         }
     }
+    //----------------------------------------------------------------
 
     public static boolean loginUser(String username, String password) {
 
@@ -68,6 +69,7 @@ public class DatabaseManager {
             return false;
         }
     }
+    //----------------------------------------------------------------
 
     public static String getCurrentUsername() {
 
@@ -106,6 +108,8 @@ public class DatabaseManager {
             System.out.println("Save score error: " + e.getMessage());
         }
     }
+
+    //----------------------------------------------------------------
 
     public static int getCurrentUserHighScore() {
 
@@ -191,6 +195,8 @@ public class DatabaseManager {
         }
     }
 
+    //----------------------------------------------------------------
+
     public static void setSelectedPlane(String planeName) {
 
         if (currentUsername == null) {
@@ -217,6 +223,8 @@ public class DatabaseManager {
             System.out.println("Set selected plane error: " + e.getMessage());
         }
     }
+
+    //----------------------------------------------------------------
 
     public static boolean canBuyPlane(int cost) {
 
@@ -258,25 +266,32 @@ public class DatabaseManager {
         }
     }
 
+    //----------------------------------------------------------------
+
     public static int getBackgroundMusic() {
 
         return getSoundSetting("background_music");
     }
 
+    //----------------------------------------------------------------
+
     public static int getShotSound() {
 
         return getSoundSetting("shot_sound");
     }
+    //----------------------------------------------------------------
 
     public static int getCrashSound() {
 
         return getSoundSetting("crash_sound");
     }
+    //----------------------------------------------------------------
 
     public static int getGameOverSound() {
 
         return getSoundSetting("game_over_sound");
     }
+    //----------------------------------------------------------------
 
     private static int getSoundSetting(String columnName) {
 
@@ -354,6 +369,8 @@ public class DatabaseManager {
         }
     }
 
+    //----------------------------------------------------------------
+
     public static String getHighScoresText() {
 
         String text = "";
@@ -364,10 +381,11 @@ public class DatabaseManager {
 
             Connection connection = DriverManager.getConnection(DB_URL);
 
-            String sql = "SELECT username, MAX(score) AS best_score, level, played_at " +
-                    "FROM game_records " +
-                    "GROUP BY username " +
-                    "ORDER BY best_score DESC";
+            String sql = "SELECT g.username, g.score, g.level, g.played_at " +
+                    "FROM game_records g " +
+                    "WHERE g.score = (SELECT MAX(score) FROM game_records WHERE username = g.username) " +
+                    "GROUP BY g.username " +
+                    "ORDER BY g.score DESC";
 
             Statement statement = connection.createStatement();
             ResultSet resultSet = statement.executeQuery(sql);
@@ -375,7 +393,7 @@ public class DatabaseManager {
             while (resultSet.next()) {
 
                 text += "Username: " + resultSet.getString("username") + "\n";
-                text += "Score: " + resultSet.getInt("best_score") + "\n";
+                text += "Score: " + resultSet.getInt("score") + "\n";
                 text += "Level: " + resultSet.getInt("level") + "\n";
                 text += "Date: " + resultSet.getString("played_at") + "\n";
                 text += "----------------------\n";
@@ -397,4 +415,5 @@ public class DatabaseManager {
 
         return text;
     }
+
 }

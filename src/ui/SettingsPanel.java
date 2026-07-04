@@ -11,7 +11,6 @@ public class SettingsPanel extends JPanel {
 
     //Fields
     private GameMain gameMain;
-
     private JCheckBox backgroundMusicCheckBox;
     private JCheckBox shotSoundCheckBox;
     private JCheckBox crashSoundCheckBox;
@@ -26,7 +25,7 @@ public class SettingsPanel extends JPanel {
 
         setLayout(null);
 
-        ImageIcon background = new ImageIcon("C:\\Users\\Asus\\Downloads\\background.jpg");
+        ImageIcon background = new ImageIcon("visuals/background.jpg");
         Image backgroundImage = background.getImage().getScaledInstance(800, 600, Image.SCALE_SMOOTH);
 
         JLabel backgroundLabel = new JLabel(new ImageIcon(backgroundImage));

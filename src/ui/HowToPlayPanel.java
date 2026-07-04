@@ -20,7 +20,7 @@ public class HowToPlayPanel extends JPanel {
 
         setLayout(null);
 
-        ImageIcon background = new ImageIcon("C:\\Users\\Asus\\Downloads\\background.jpg");
+        ImageIcon background = new ImageIcon("visuals/background.jpg");
         Image backgroundImage = background.getImage().getScaledInstance(800, 600, Image.SCALE_SMOOTH);
 
         JLabel backgroundLabel = new JLabel(new ImageIcon(backgroundImage));
@@ -68,11 +68,11 @@ public class HowToPlayPanel extends JPanel {
                         "Esc                 : Back To Menu\n\n" +
 
                         "PowerUps:\n\n" +
-                        "R       : Rapid Fire\n" +
-                        "F       : Freeze Bomb\n" +
-                        "L       : Extra Life\n" +
-                        "S       : Shield\n" +
-                        "+       : Add Fire\n\n" +
+                        "Rapid Fire   : Faster shooting for a short time\n" +
+                        "Freeze Bomb  : Freezes enemies and eggs\n" +
+                        "Extra Life   : Adds one life up to 5\n" +
+                        "Shield       : Protects the plane for a short time\n" +
+                        "Add Fire     : Adds one extra bullet permanently\n\n" +
 
                         "Game rules:\n\n" +
                         "You have 3 lives at the start of the game.\n" +
@@ -125,6 +125,7 @@ public class HowToPlayPanel extends JPanel {
     }
 
     //----------------------------------------------------------------
+
     //Style button
 
     private void styleButton(JButton button) {

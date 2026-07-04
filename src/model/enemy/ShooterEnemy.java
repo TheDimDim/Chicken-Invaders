@@ -15,7 +15,7 @@ public class ShooterEnemy extends Enemy {
 
         lastShootTime = 0;
 
-        ImageIcon enemyIcon = new ImageIcon("C:/Users/Asus/Downloads/chicken-20260613T110124Z-3-001/chicken/shooter_chicken.png");
+        ImageIcon enemyIcon = new ImageIcon("visuals/shooter_chicken.png");
         Image enemyImage = enemyIcon.getImage().getScaledInstance(60, 60, Image.SCALE_SMOOTH);
 
         setIcon(new ImageIcon(enemyImage));
@@ -29,7 +29,26 @@ public class ShooterEnemy extends Enemy {
         if (now - lastShootTime > 2000) {
 
             lastShootTime = now;
-            return new Bullet(this.getX(), this.getY());
+
+            int startX = getXPosition() + 30;
+            int startY = getYPosition() + 30;
+
+            int randomDirection = (int)(Math.random() * 100);
+
+            if (randomDirection < 70) {
+
+                return new Bullet(startX, startY, 0, 6);
+            }
+
+            else if (randomDirection < 85) {
+
+                return new Bullet(startX, startY, -6, 0);
+            }
+
+            else {
+
+                return new Bullet(startX, startY, 6, 0);
+            }
         }
 
         return null;
