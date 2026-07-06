@@ -6,7 +6,7 @@ public class DatabaseManager {
 
     //Fields
     private static String currentUsername;
-    private static final String DB_URL = "jdbc:sqlite:C:/Users/Asus/DataGripProjects/chicken-invaders-db/chicken-invaders-db.sqlite";
+    private static final String DB_URL = "jdbc:sqlite:chicken-invaders-db/chicken-invaders-db.sqlite";
 
     //----------------------------------------------------------------
 

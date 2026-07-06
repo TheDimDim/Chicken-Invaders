@@ -138,7 +138,7 @@ The selected sound settings are saved in the database.
 
 ## Database Description
 
-## Database Type:
+### Database Type:
 This project uses SQLite as its database.
 SQLite is a file-based database and is suitable for this desktop Java project.
 The connection to the database is handled using JDBC in the DatabaseManager class.
@@ -148,11 +148,11 @@ The connection to the database is handled using JDBC in the DatabaseManager clas
 
 The SQLite database file is included inside the project in the chicken-invaders-db folder.
 
-# Database file path: 
+## Database file path: 
 
 chicken-invaders-db/chicken-invaders-db.sqlite
 
-# Database URL used in the code:
+## Database URL used in the code:
 private static final String DB_URL = "jdbc:sqlite:chicken-invaders-db/chicken-invaders-db.sqlite";
 
 If the project is moved to another computer, the chicken-invaders-db folder must remain in the main project directory.
@@ -165,48 +165,50 @@ The project uses two main database tables:
 -game_records
 SQLite may also create internal tables such as sqlite_master and sqlite_sequence. These tables are managed automatically by SQLite.
 
-## users Table : The users table stores user account information and user settings.
+## users Table : 
+- The users table stores user account information and user settings.
 
 This table is used for registering users, logging in users, saving the selected plane, 
 saving the user's high score, saving the last reached level, and saving sound settings.
 
-# Main columns used in this table:
+### Main columns used in this table:
 
-username: Stores the username.
-password: Stores the password.
-selected_plane: Stores the selected plane chosen from the store.
-high_score: Stores the user's highest score.
-last_level: Stores the last reached level.
-background_music: Stores background music setting.
-shot_sound: Stores shot sound setting.
-crash_sound: Stores crash / explosion sound setting.
-game_over_sound: Stores game over / win sound setting.
+- username: Stores the username.
+- password: Stores the password.
+- selected_plane: Stores the selected plane chosen from the store.
+- high_score: Stores the user's highest score.
+- last_level: Stores the last reached level.
+- background_music: Stores background music setting.
+- shot_sound: Stores shot sound setting.
+- crash_sound: Stores crash / explosion sound setting.
+- game_over_sound: Stores game over / win sound setting.
 
 
-### game_records Table : The game_records table stores records of finished games.
+### game_records Table :
+- The game_records table stores records of finished games.
 
 This table is used for saving each played game, saving score history, and showing high scores.
 
-Main columns used in this table:
-username: Stores the username of the player.
-score: Stores the final score.
-level: Stores the level reached by the player.
-background_music: Stores the background music setting during the game.
-shot_sound: Stores the shot sound setting during the game.
-crash_sound: Stores the crash / explosion sound setting during the game.
-game_over_sound: Stores the game over / win sound setting during the game.
-played_at: Stores the date and time of the game record.
+### Main columns used in this table:
+- username: Stores the username of the player.
+- score: Stores the final score.
+- level: Stores the level reached by the player.
+- background_music: Stores the background music setting during the game.
+- shot_sound: Stores the shot sound setting during the game.
+- crash_sound: Stores the crash / explosion sound setting during the game.
+- game_over_sound: Stores the game over / win sound setting during the game.
+- played_at: Stores the date and time of the game record.
 
 
 ## Database Usage in Classes
 
-DatabaseManager: Handles all database operations.
-LoginPanel: Checks username and password.
-RegisterPanel: Registers new users.
-StorePanel: Reads high score and saves selected plane.
-SettingsPanel: Saves sound settings.
-HighScorePanel: Shows high scores.
-GamePanel: Saves score and game records.
+- DatabaseManager: Handles all database operations.
+- LoginPanel: Checks username and password.
+- RegisterPanel: Registers new users.
+- StorePanel: Reads high score and saves selected plane.
+- SettingsPanel: Saves sound settings.
+- HighScorePanel: Shows high scores.
+- GamePanel: Saves score and game records.
 
 
 ## Thank you for taking the time to review this project. Hope you enjoy it :)
