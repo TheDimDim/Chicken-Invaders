@@ -138,7 +138,8 @@ The selected sound settings are saved in the database.
 
 ## Database Description
 
-## Database Type: This project uses SQLite as its database.
+## Database Type:
+This project uses SQLite as its database.
 SQLite is a file-based database and is suitable for this desktop Java project.
 The connection to the database is handled using JDBC in the DatabaseManager class.
 
@@ -148,6 +149,7 @@ The connection to the database is handled using JDBC in the DatabaseManager clas
 The SQLite database file is included inside the project in the chicken-invaders-db folder.
 
 # Database file path: 
+
 chicken-invaders-db/chicken-invaders-db.sqlite
 
 # Database URL used in the code:
