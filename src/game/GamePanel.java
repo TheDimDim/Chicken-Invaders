@@ -1028,6 +1028,8 @@ public class GamePanel extends JPanel implements KeyListener {
     }
 
     //----------------------------------------------------------------
+
+    //----------------------------------------------------------------
     // Message
     private void showMessage(String text) {
 
