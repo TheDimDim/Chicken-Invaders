@@ -1,10 +1,5 @@
-# Chicken Invaders Final Project
+# Chicken Invaders 
 
-## Student Information
-
-Student Name: Dima Assadollahzadeh  
-Student ID: 40413401  
-GitHub Repository: https://github.com/TheDimDim/Chicken-Invaders.git
 
 ## Project Description
 
